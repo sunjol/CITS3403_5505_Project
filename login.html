@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PromptShare | Sign In</title>
+  <link rel="stylesheet" href="./assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="./index.html">PromptShare</a>
+      <nav class="nav-links">
+        <a class="nav-link" href="./index.html">Home</a>
+        <a class="nav-link" href="./explore.html">Explore</a>
+        <a class="nav-link active" href="./login.html">Sign In</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="auth-wrap card">
+      <h1 style="text-align:center;margin-top:0">Welcome Back</h1>
+      <p class="muted" style="text-align:center">Sign in to ask questions, post answers, and vote on prompt threads.</p>
+      <form action="./dashboard.html" method="get" style="display:grid;gap:0.8rem">
+        <input class="field" type="text" name="username" placeholder="Username" required>
+        <input class="field" type="password" name="password" placeholder="Password" required>
+        <button class="btn btn-primary" type="submit">Enter PromptShare</button>
+      </form>
+      <p class="mini muted" style="margin-top:1rem">No account? <a href="./signup.html" style="color:#7fb5ff">Create one</a></p>
+    </section>
+  </main>
+</body>
+</html>
