@@ -125,10 +125,172 @@ body {
 .output-box { min-height: 300px; border: 1px solid var(--line); border-radius: 14px; padding: 1rem; background: #0b0f16; color: #d2d9e9; }
 
 .chip { font-size: 0.68rem; color: #8fc5ff; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59,130,246,0.4); border-radius: 99px; padding: 0.16rem 0.45rem; text-transform: uppercase; }
+.chip.success { color: #8df2c0; background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.38); }
 .mini { font-size: 0.85rem; }
 
+.page-wrap { padding: 3rem 0 4rem; }
+.page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.page-heading h1 { margin: 0.4rem 0 0.5rem; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.05; }
+.page-heading p { margin: 0; max-width: 660px; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.stat-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  padding: 1rem;
+}
+.stat-card strong { display: block; font-size: 2rem; margin: 0.35rem 0; }
+.stat-label { color: #d9e2f7; font-size: 0.85rem; }
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(280px, 0.8fr);
+  gap: 1rem;
+  align-items: start;
+}
+.dashboard-main,
+.dashboard-side {
+  display: grid;
+  gap: 1rem;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.section-title h2,
+.dashboard-side h2,
+.preview-panel h2 { margin: 0; }
+.section-title a,
+.action-link {
+  color: #8fc5ff;
+  text-decoration: none;
+}
+.prompt-item,
+.preview-card,
+.tip-box {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #0b0f16;
+  padding: 1rem;
+}
+.prompt-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.prompt-item h3,
+.preview-card h3,
+.tip-box h3 { margin: 0.6rem 0 0.35rem; }
+.prompt-item p,
+.preview-card p,
+.tip-box p { margin: 0; }
+.prompt-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.action-list {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+.action-link {
+  display: grid;
+  gap: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.85rem;
+  background: #0b0f16;
+}
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: grid;
+  gap: 0.8rem;
+  color: var(--muted);
+}
+.activity-list li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  align-items: start;
+}
+.activity-list span {
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-top: 0.4rem;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+  gap: 1rem;
+  align-items: start;
+}
+.prompt-form {
+  display: grid;
+  gap: 0.8rem;
+}
+.prompt-form label,
+.visibility-box legend {
+  color: #d9e2f7;
+  font-weight: 650;
+  font-size: 0.9rem;
+}
+.prompt-form select.field { appearance: none; }
+.textarea-small {
+  min-height: 110px;
+  resize: vertical;
+}
+.visibility-box {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem;
+  margin: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+.radio-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  color: var(--muted);
+  font-weight: 400;
+}
+.radio-row input { margin-top: 0.18rem; }
+.form-actions {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+.preview-panel {
+  display: grid;
+  gap: 1rem;
+}
+
 @media (max-width: 900px) {
-  .grid-3, .grid-2, .dashboard { grid-template-columns: 1fr; }
+  .grid-3, .grid-2, .dashboard, .stats-grid, .dashboard-layout, .form-layout { grid-template-columns: 1fr; }
   .pane { border-right: 0; border-bottom: 1px solid var(--line); }
   .pane:last-child { border-bottom: 0; }
+  .page-heading { align-items: stretch; flex-direction: column; }
+  .prompt-item { align-items: flex-start; flex-direction: column; }
 }
