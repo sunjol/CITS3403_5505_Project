@@ -1,24 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Optimise Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimise Prompt</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0d1117;
+            color: #e6edf3;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: #161b22;
+            border-bottom: 1px solid #30363d;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #c9d1d9;
+        }
+
+        .nav-links a {
+            color: #c9d1d9;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            color: #58a6ff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .sub-text {
+            color: #8b949e;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #c9d1d9;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 14px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            background-color: #0d1117;
+            color: #e6edf3;
+            resize: vertical;
+            margin-bottom: 18px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        button {
+            background-color: #1f6feb;
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #388bfd;
+        }
+
+        .output-box {
+            margin-top: 30px;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .output-box h3 {
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        .placeholder {
+            color: #8b949e;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Optimise Prompt</h1>
+    <div class="navbar">
+        <div class="logo">PromptShare</div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="search.html">Search</a>
+            <a href="optimise.html">Optimise</a>
+        </div>
+    </div>
 
-    <form>
-        <label for="prompt">Enter your prompt:</label><br>
-        <textarea id="prompt" rows="6" cols="50"></textarea>
+    <div class="container">
+        <div class="card">
+            <h1>Optimise Prompt</h1>
+            <p class="sub-text">Improve your prompt structure and make it more effective.</p>
 
-        <br><br>
+            <form>
+                <label for="prompt">Enter your prompt</label>
+                <textarea id="prompt" name="prompt" placeholder="Type your prompt here..."></textarea>
+                <button type="submit">Optimise</button>
+            </form>
 
-        <button type="submit">Optimise</button>
-    </form>
-
-    <hr>
-
-    <p>Output will be shown here</p>
+            <div class="output-box">
+                <h3>Optimised Output</h3>
+                <p class="placeholder">No output yet. Improved prompt text will appear here later.</p>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
