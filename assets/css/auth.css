@@ -1,0 +1,143 @@
+﻿/* ==========================================================
+   PromptShare - Authentication Styles
+   Validation states, error messages, and auth-specific polish
+   Extends the main dark theme in styles.css
+   ========================================================== */
+
+/* --- Field error state --- */
+.field.field-error {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.06);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.field.field-error:focus {
+  border-color: #ef4444;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+}
+
+/* --- Field valid state --- */
+.field.field-valid {
+  border-color: #22c55e;
+}
+
+.field.field-valid:focus {
+  border-color: #22c55e;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+/* --- Error message text below fields --- */
+.field-error-text {
+  color: #fca5a5;
+  margin: 0.35rem 0 0;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.field-error-text::before {
+  content: "\26A0";
+  font-size: 0.9em;
+}
+
+/* --- Auth card polish --- */
+.auth-wrap {
+  max-width: 440px;
+  margin: 3rem auto;
+  padding: 2rem;
+}
+
+.auth-wrap h1 {
+  font-size: 1.6rem;
+  letter-spacing: 0;
+  margin-top: 0;
+  text-align: center;
+}
+
+.auth-wrap .field {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-form {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.auth-intro,
+.auth-switch {
+  text-align: center;
+}
+
+.auth-switch {
+  margin-top: 1rem;
+}
+
+.field-help {
+  margin: 0.3rem 0 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Link hover polish for auth pages --- */
+.auth-wrap a {
+  color: #7fb5ff;
+}
+
+.auth-wrap a {
+  transition: color 0.15s ease;
+}
+
+.auth-wrap a:hover {
+  color: #a8d0ff !important;
+  text-decoration: underline;
+}
+
+/* --- Submit button full width + subtle lift --- */
+.auth-wrap .btn-primary {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  transition: transform 0.05s ease, box-shadow 0.15s ease;
+}
+
+.auth-wrap .btn-primary:hover {
+  box-shadow: 0 6px 18px rgba(114, 66, 214, 0.35);
+}
+
+.auth-wrap .btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* --- Mobile responsive tweaks --- */
+@media (max-width: 576px) {
+  .auth-wrap {
+    margin: 1.5rem auto;
+    padding: 1.5rem;
+  }
+
+  .auth-wrap h1 {
+    font-size: 1.35rem;
+  }
+}
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .auth-wrap .btn-primary {
+    transition: none;
+  }
+}
