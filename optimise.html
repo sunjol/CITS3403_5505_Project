@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PromptShare | Optimise Prompt</title>
+  <link rel="stylesheet" href="./assets/css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="./index.html">PromptShare</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a class="nav-link" href="./index.html">Home</a>
+        <a class="nav-link" href="./search.html">Search</a>
+        <a class="nav-link active" href="./optimise.html">Optimise</a>
+        <a class="nav-link" href="./dashboard.html">Dashboard</a>
+        <a class="nav-link" href="./add-prompt.html">Add Prompt</a>
+        <a class="nav-link" href="./login.html">Sign In</a>
+        <a class="btn btn-primary mini" href="./signup.html">Get Started</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container page-wrap">
+    <section class="page-heading">
+      <div>
+        <span class="eyebrow">Improve</span>
+        <h1>Optimise a prompt draft</h1>
+        <p class="muted">Turn a rough instruction into a clearer prompt with role, context, constraints, and output format.</p>
+      </div>
+      <a class="btn btn-soft" href="./search.html">Browse Examples</a>
+    </section>
+
+    <section class="tool-layout">
+      <form class="card prompt-form" action="./optimise.html" method="get">
+        <label for="prompt-goal">Goal</label>
+        <input class="field" id="prompt-goal" name="goal" type="text" placeholder="Example: Generate better product descriptions" required>
+
+        <label for="draft-prompt">Original prompt</label>
+        <textarea class="editor-content" id="draft-prompt" name="prompt" placeholder="Paste your prompt draft here..." required>Write a product description for my headphones.</textarea>
+
+        <div class="filter-grid">
+          <div>
+            <label for="tone">Tone</label>
+            <select class="field" id="tone" name="tone">
+              <option>Clear and professional</option>
+              <option>Friendly</option>
+              <option>Academic</option>
+              <option>Persuasive</option>
+            </select>
+          </div>
+          <div>
+            <label for="format">Output format</label>
+            <select class="field" id="format" name="format">
+              <option>Structured sections</option>
+              <option>Bullet points</option>
+              <option>Table</option>
+              <option>JSON</option>
+            </select>
+          </div>
+          <div>
+            <label for="audience">Audience</label>
+            <select class="field" id="audience" name="audience">
+              <option>General users</option>
+              <option>Students</option>
+              <option>Developers</option>
+              <option>Business team</option>
+            </select>
+          </div>
+        </div>
+
+        <fieldset class="visibility-box">
+          <legend>Optimisation focus</legend>
+          <label class="radio-row">
+            <input type="checkbox" name="focus" value="clarity" checked>
+            <span>Improve clarity and remove vague wording</span>
+          </label>
+          <label class="radio-row">
+            <input type="checkbox" name="focus" value="constraints" checked>
+            <span>Add constraints and success criteria</span>
+          </label>
+          <label class="radio-row">
+            <input type="checkbox" name="focus" value="format">
+            <span>Make the output format stricter</span>
+          </label>
+        </fieldset>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Optimise Prompt</button>
+          <button class="btn btn-soft" type="reset">Reset</button>
+        </div>
+      </form>
+
+      <aside class="preview-panel">
+        <section class="card">
+          <span class="chip success">Preview</span>
+          <h2>Optimised output</h2>
+          <div class="output-box">
+            <p><strong>Role:</strong> Act as an ecommerce copywriter for consumer audio products.</p>
+            <p><strong>Task:</strong> Write a concise product description for wireless headphones using the provided features.</p>
+            <p><strong>Constraints:</strong> Focus on customer benefits, avoid unsupported claims, keep the description under 120 words, and use a confident but accessible tone.</p>
+            <p><strong>Format:</strong> Return a headline, one short paragraph, and three bullet-point benefits.</p>
+          </div>
+        </section>
+
+        <section class="card quality-list">
+          <h2>Quality check</h2>
+          <div class="quality-item">
+            <div class="score-row">
+              <h3>Before</h3>
+              <span class="muted mini">42%</span>
+            </div>
+            <div class="score-meter" style="--score:42%"><span></span></div>
+          </div>
+          <div class="quality-item">
+            <div class="score-row">
+              <h3>After</h3>
+              <span class="muted mini">88%</span>
+            </div>
+            <div class="score-meter" style="--score:88%"><span></span></div>
+          </div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="compare-grid" style="margin-top:1rem">
+      <article class="compare-box">
+        <h3>Original</h3>
+        <pre>Write a product description for my headphones.</pre>
+      </article>
+      <article class="compare-box">
+        <h3>Improved structure</h3>
+        <pre>Role, task, context, constraints, and output format are separated so the model has fewer assumptions to guess.</pre>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

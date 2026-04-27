@@ -52,7 +52,9 @@
 
 .auth-wrap h1 {
   font-size: 1.6rem;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
+  margin-top: 0;
+  text-align: center;
 }
 
 .auth-wrap .field {
@@ -60,7 +62,90 @@
   box-sizing: border-box;
 }
 
+.auth-form {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.field-with-toggle {
+  position: relative;
+}
+
+.field-with-toggle .field {
+  padding-right: 4.6rem;
+}
+
+.toggle-visibility {
+  position: absolute;
+  right: 0.45rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #7fb5ff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.5rem;
+}
+
+.toggle-visibility:hover,
+.toggle-visibility:focus-visible {
+  background: #1a1f2d;
+  color: var(--text);
+  outline: none;
+}
+
+.login-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.checkbox-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--muted);
+}
+
+.checkbox-inline input {
+  accent-color: var(--blue);
+}
+
+.auth-intro,
+.auth-switch {
+  text-align: center;
+}
+
+.auth-switch {
+  margin-top: 1rem;
+}
+
+.field-help {
+  margin: 0.3rem 0 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* --- Link hover polish for auth pages --- */
+.auth-wrap a {
+  color: #7fb5ff;
+}
+
 .auth-wrap a {
   transition: color 0.15s ease;
 }
@@ -75,7 +160,7 @@
   width: 100%;
   padding: 0.85rem 1rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
   transition: transform 0.05s ease, box-shadow 0.15s ease;
 }
 
