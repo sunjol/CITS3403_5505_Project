@@ -4,20 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PromptShare | Home</title>
-  <link rel="stylesheet" href="./assets/css/styles.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
-      <a class="brand" href="./index.html">PromptShare</a>
+      <a class="brand" href="{{ url_for('main.index') }}">PromptShare</a>
       <nav class="nav-links" aria-label="Primary navigation">
-        <a class="nav-link active" href="./index.html">Home</a>
+        <a class="nav-link active" href="{{ url_for('main.index') }}">Home</a>
         <a class="nav-link" href="./search.html">Search</a>
         <a class="nav-link" href="./optimise.html">Optimise</a>
         <a class="nav-link" href="./dashboard.html">Dashboard</a>
         <a class="nav-link" href="./add-prompt.html">Add Prompt</a>
-        <a class="nav-link" href="./login.html">Sign In</a>
-        <a class="btn btn-primary mini" href="./signup.html">Get Started</a>
+        <a class="nav-link" href="{{ url_for('auth.login') }}">Sign In</a>
+        <a class="btn btn-primary mini" href="{{ url_for('auth.register') }}">Get Started</a>
       </nav>
     </div>
   </header>
@@ -28,7 +28,7 @@
       <h1>Engineer better <br><span>AI Behaviors.</span></h1>
       <p>A community forum to ask, answer, and improve prompts for real LLM use cases. Think Stack Overflow, but for prompting.</p>
       <div class="row" style="justify-content:center;flex-wrap:wrap">
-        <a class="btn btn-primary" href="./signup.html">Join The Community</a>
+        <a class="btn btn-primary" href="{{ url_for('auth.register') }}">Join The Community</a>
         <a class="btn btn-soft" href="./add-prompt.html">Add Your First Prompt</a>
       </div>
     </section>
