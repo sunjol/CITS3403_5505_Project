@@ -1,8 +1,10 @@
 """Routes for the main blueprint."""
+from flask import render_template
+
 from app.main import bp
 
 
 @bp.route('/')
 def index():
-    """Placeholder homepage."""
-    return '<h1>PromptShare</h1><p>Flask is running!</p>'
+    """Render the homepage."""
+    return render_template('main/index.html')

@@ -1,20 +1,22 @@
 """Routes for the auth blueprint."""
+from flask import render_template
+
 from app.auth import bp
 
 
 @bp.route('/login')
 def login():
-    """Placeholder login route."""
-    return '<h1>Login</h1><p>Login form coming soon</p>'
+    """Render the login page."""
+    return render_template('auth/login.html')
 
 
 @bp.route('/register')
 def register():
-    """Placeholder register route."""
-    return '<h1>Register</h1><p>Register form coming soon</p>'
+    """Render the sign-up page."""
+    return render_template('auth/signup.html')
 
 
 @bp.route('/logout')
 def logout():
     """Placeholder logout route."""
-    return '<h1>Logout</h1><p>Logout coming soon</p>'
+    return '<h1>Logout</h1><p>Coming soon</p>'
