@@ -4,21 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PromptShare | Sign In</title>
-  <link rel="stylesheet" href="./assets/css/styles.css">
-  <link rel="stylesheet" href="./assets/css/auth.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 </head>
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
-      <a class="brand" href="./index.html">PromptShare</a>
+      <a class="brand" href="{{ url_for('main.index') }}">PromptShare</a>
       <nav class="nav-links" aria-label="Primary navigation">
-        <a class="nav-link" href="./index.html">Home</a>
+        <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
         <a class="nav-link" href="./search.html">Search</a>
         <a class="nav-link" href="./optimise.html">Optimise</a>
         <a class="nav-link" href="./dashboard.html">Dashboard</a>
         <a class="nav-link" href="./add-prompt.html">Add Prompt</a>
-        <a class="nav-link active" href="./login.html">Sign In</a>
-        <a class="btn btn-primary mini" href="./signup.html">Get Started</a>
+        <a class="nav-link active" href="{{ url_for('auth.login') }}">Sign In</a>
+        <a class="btn btn-primary mini" href="{{ url_for('auth.register') }}">Get Started</a>
       </nav>
     </div>
   </header>
@@ -28,8 +28,7 @@
       <h1 id="login-heading" style="text-align:center;margin-top:0">Welcome Back</h1>
       <p class="muted" style="text-align:center">Sign in to ask questions, post answers, and vote on prompt threads.</p>
 
-      <form id="login-form" action="/login" method="POST" novalidate style="display:grid;gap:0.8rem">
-
+      <form id="login-form" action="{{ url_for('auth.login') }}" method="POST" novalidate style="display:grid;gap:0.8rem">
         <div class="field-group">
           <label for="login-identifier" class="visually-hidden">Username or email</label>
           <input class="field" type="text" id="login-identifier" name="identifier"
@@ -60,11 +59,11 @@
       </form>
 
       <p class="mini muted" style="margin-top:1rem;text-align:center">
-        No account? <a href="./signup.html" style="color:#7fb5ff">Create one</a>
+        No account? <a href="{{ url_for('auth.register') }}" style="color:#7fb5ff">Create one</a>
       </p>
     </section>
   </main>
 
-  <script src="./assets/js/auth.js"></script>
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 </body>
 </html>
