@@ -26,6 +26,13 @@
   <main class="container">
     <section class="auth-wrap card" aria-labelledby="signup-heading">
       <h1 id="signup-heading">Create your PromptShare account</h1>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
       <p class="muted auth-intro">Join the community and start sharing better prompts.</p>
 
       <form id="signup-form" class="auth-form" action="{{ url_for('auth.register') }}" method="POST" novalidate>
