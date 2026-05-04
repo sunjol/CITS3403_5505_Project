@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Client-side rendering | Flask Learning Site{% endblock %}
+
+{% block content %}
+<section class="section narrow">
+    <p class="eyebrow">JSON and JavaScript</p>
+    <h1>Client-side rendering demo</h1>
+    <p class="lead">The empty container below is not filled by Jinja. JavaScript fetches <code>/api/topics</code> and builds the cards in the browser.</p>
+    <div class="info-box">
+        Server-side rendering sends finished HTML. Client-side rendering sends data, then the browser builds part of the HTML.
+    </div>
+</section>
+
+<section id="topic-feed" class="card-grid" aria-live="polite"></section>
+{% endblock %}

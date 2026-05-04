@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Hello {{ name }} | Flask Learning Site{% endblock %}
+
+{% block content %}
+<section class="section narrow">
+    <p class="eyebrow">Dynamic route</p>
+    <h1>Hello, {{ name }}.</h1>
+    <p class="lead">The name came from the URL path and was passed into the Flask view function.</p>
+    <p><a href="{{ url_for('routes_demo') }}">Back to routes demo</a></p>
+</section>
+{% endblock %}
