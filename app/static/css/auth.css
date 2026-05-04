@@ -263,3 +263,13 @@
 .strength-strong .strength-label strong {
   color: #10b981;
 }
+/* Profile page */
+.profile-info p {
+  margin: 0.5rem 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.profile-info strong {
+  color: #7fb5ff;
+  margin-right: 0.5rem;
+}
