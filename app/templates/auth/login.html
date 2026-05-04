@@ -17,8 +17,8 @@
         <a class="nav-link" href="./optimise.html">Optimise</a>
         <a class="nav-link" href="./dashboard.html">Dashboard</a>
         <a class="nav-link" href="./add-prompt.html">Add Prompt</a>
-        {% if session.user_id %}
-          <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout ({{ session.username }})</a>
+        {% if current_user.is_authenticated %}
+          <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout ({{ current_user.username }})</a>
         {% else %}
           <a class="nav-link active" href="{{ url_for('auth.login') }}">Sign In</a>
           <a class="btn btn-primary mini" href="{{ url_for('auth.register') }}">Get Started</a>
