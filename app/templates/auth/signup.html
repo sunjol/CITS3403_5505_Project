@@ -18,11 +18,11 @@
         <a class="nav-link" href="./dashboard.html">Dashboard</a>
         <a class="nav-link" href="./add-prompt.html">Add Prompt</a>
         {% if session.user_id %}
-  <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout ({{ session.username }})</a>
-{% else %}
-  <a class="nav-link" href="{{ url_for('auth.login') }}">Sign In</a>
-  <a class="btn btn-primary mini" href="{{ url_for('auth.register') }}" aria-current="page">Get Started</a>
-{% endif %}
+          <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout ({{ session.username }})</a>
+        {% else %}
+          <a class="nav-link" href="{{ url_for('auth.login') }}">Sign In</a>
+          <a class="btn btn-primary mini" href="{{ url_for('auth.register') }}" aria-current="page">Get Started</a>
+        {% endif %}
       </nav>
     </div>
   </header>
@@ -30,6 +30,7 @@
   <main class="container">
     <section class="auth-wrap card" aria-labelledby="signup-heading">
       <h1 id="signup-heading">Create your PromptShare account</h1>
+
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           {% for category, message in messages %}
@@ -37,40 +38,53 @@
           {% endfor %}
         {% endif %}
       {% endwith %}
+
       <p class="muted auth-intro">Join the community and start sharing better prompts.</p>
 
-      <form id="signup-form" class="auth-form" action="{{ url_for('auth.register') }}" method="POST" novalidate>
+      <form id="signup-form" class="auth-form" method="POST" novalidate>
+        {{ form.hidden_tag() }}
+
         <div class="field-group">
-          <label for="username" class="visually-hidden">Username</label>
-          <input class="field" type="text" id="username" name="username"
-                 placeholder="Username (e.g. prompt_master)" required minlength="3" maxlength="20"
-                 autocomplete="username">
-          <p class="mini muted field-help">3-20 characters, letters, numbers, and underscores only.</p>
+          {{ form.username(class="field", placeholder="Username (e.g. prompt_master)", autocomplete="username") }}
+          {% if form.username.errors %}
+            {% for error in form.username.errors %}
+              <p class="field-error">{{ error }}</p>
+            {% endfor %}
+          {% else %}
+            <p class="mini muted field-help">3-20 characters, letters, numbers, and underscores only.</p>
+          {% endif %}
         </div>
 
         <div class="field-group">
-          <label for="email" class="visually-hidden">Email</label>
-          <input class="field" type="email" id="email" name="email"
-                 placeholder="you@example.com" required
-                 autocomplete="email">
+          {{ form.email(class="field", placeholder="you@example.com", autocomplete="email") }}
+          {% if form.email.errors %}
+            {% for error in form.email.errors %}
+              <p class="field-error">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
         </div>
 
         <div class="field-group">
-          <label for="password" class="visually-hidden">Password</label>
-          <input class="field" type="password" id="password" name="password"
-                 placeholder="Password (minimum 8 characters)" required minlength="8"
-                 autocomplete="new-password">
-          <p class="mini muted field-help">Use at least 8 characters with a mix of letters and numbers.</p>
+          {{ form.password(class="field", placeholder="Password (minimum 8 characters)", autocomplete="new-password") }}
+          {% if form.password.errors %}
+            {% for error in form.password.errors %}
+              <p class="field-error">{{ error }}</p>
+            {% endfor %}
+          {% else %}
+            <p class="mini muted field-help">Use at least 8 characters with a mix of letters and numbers.</p>
+          {% endif %}
         </div>
 
         <div class="field-group">
-          <label for="confirm-password" class="visually-hidden">Confirm password</label>
-          <input class="field" type="password" id="confirm-password" name="confirm_password"
-                 placeholder="Confirm password" required
-                 autocomplete="new-password">
+          {{ form.confirm_password(class="field", placeholder="Confirm password", autocomplete="new-password") }}
+          {% if form.confirm_password.errors %}
+            {% for error in form.confirm_password.errors %}
+              <p class="field-error">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
         </div>
 
-        <button class="btn btn-primary" type="submit">Create Community Account</button>
+        {{ form.submit(class="btn btn-primary") }}
       </form>
 
       <p class="mini muted auth-switch">

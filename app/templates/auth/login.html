@@ -18,11 +18,11 @@
         <a class="nav-link" href="./dashboard.html">Dashboard</a>
         <a class="nav-link" href="./add-prompt.html">Add Prompt</a>
         {% if session.user_id %}
-  <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout ({{ session.username }})</a>
-{% else %}
-  <a class="nav-link active" href="{{ url_for('auth.login') }}">Sign In</a>
-  <a class="btn btn-primary mini" href="{{ url_for('auth.register') }}">Get Started</a>
-{% endif %}
+          <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout ({{ session.username }})</a>
+        {% else %}
+          <a class="nav-link active" href="{{ url_for('auth.login') }}">Sign In</a>
+          <a class="btn btn-primary mini" href="{{ url_for('auth.register') }}">Get Started</a>
+        {% endif %}
       </nav>
     </div>
   </header>
@@ -30,6 +30,7 @@
   <main class="container">
     <section class="auth-wrap card" aria-labelledby="login-heading">
       <h1 id="login-heading" style="text-align:center;margin-top:0">Welcome Back</h1>
+
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           {% for category, message in messages %}
@@ -37,36 +38,43 @@
           {% endfor %}
         {% endif %}
       {% endwith %}
+
       <p class="muted" style="text-align:center">Sign in to ask questions, post answers, and vote on prompt threads.</p>
 
-      <form id="login-form" action="{{ url_for('auth.login') }}" method="POST" novalidate style="display:grid;gap:0.8rem">
+      <form id="login-form" method="POST" novalidate style="display:grid;gap:0.8rem">
+        {{ form.hidden_tag() }}
+
         <div class="field-group">
-          <label for="login-identifier" class="visually-hidden">Username or email</label>
-          <input class="field" type="text" id="login-identifier" name="identifier"
-                 placeholder="Username or email" required
-                 autocomplete="username">
+          {{ form.identifier(class="field", placeholder="Username or email", autocomplete="username") }}
+          {% if form.identifier.errors %}
+            {% for error in form.identifier.errors %}
+              <p class="field-error">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
         </div>
 
         <div class="field-group">
-          <label for="login-password" class="visually-hidden">Password</label>
           <div class="field-with-toggle">
-            <input class="field" type="password" id="login-password" name="password"
-                   placeholder="Password" required
-                   autocomplete="current-password">
-            <button type="button" class="toggle-visibility" data-toggle-target="login-password"
+            {{ form.password(class="field", placeholder="Password", autocomplete="current-password") }}
+            <button type="button" class="toggle-visibility" data-toggle-target="password"
                     aria-label="Show password" aria-pressed="false">Show</button>
           </div>
+          {% if form.password.errors %}
+            {% for error in form.password.errors %}
+              <p class="field-error">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
         </div>
 
         <div class="login-row">
           <label class="checkbox-inline mini">
-            <input type="checkbox" id="remember-me" name="remember">
+            {{ form.remember() }}
             <span>Remember me</span>
           </label>
           <a href="#" class="mini forgot-link">Forgot password?</a>
         </div>
 
-        <button class="btn btn-primary" type="submit">Enter PromptShare</button>
+        {{ form.submit(class="btn btn-primary") }}
       </form>
 
       <p class="mini muted" style="margin-top:1rem;text-align:center">
