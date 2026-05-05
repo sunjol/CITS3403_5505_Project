@@ -30,4 +30,7 @@ def create_app(config_class=Config):
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
 
+    # Import models so SQLAlchemy registers them
+    from app import models  # noqa: F401
+
     return app
