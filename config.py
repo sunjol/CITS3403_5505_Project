@@ -17,3 +17,4 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     DEBUG = os.environ.get('FLASK_DEBUG', '0') == '1'
+    WTF_CSRF_ENABLED = True

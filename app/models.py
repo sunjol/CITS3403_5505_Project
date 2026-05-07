@@ -1,15 +1,17 @@
 """Database models for PromptShare."""
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app import db
+from app import db, login_manager
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     """A registered user of PromptShare."""
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False, index=True)
+    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(256), nullable=False)
 
     def set_password(self, password):
@@ -22,3 +24,9 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    """Tell Flask-Login how to load a user from a user_id."""
+    return User.query.get(int(user_id))
