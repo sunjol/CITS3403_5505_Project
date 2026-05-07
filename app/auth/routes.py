@@ -1,10 +1,10 @@
 """Routes for the auth blueprint."""
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 
 from app import db
 from app.auth import bp
-from app.auth.forms import RegistrationForm, LoginForm
+from app.auth.forms import RegistrationForm, LoginForm, ChangePasswordForm
 from app.models import User
 
 
@@ -56,3 +56,28 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'success')
     return redirect(url_for('main.index'))
+
+
+@bp.route('/profile/<username>', methods=['GET', 'POST'])
+@login_required
+def profile(username):
+    """Show the user profile page and handle password changes."""
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        abort(404)
+
+    # Only the owner of the profile can change their own password
+    is_owner = current_user.is_authenticated and current_user.username == username
+
+    form = ChangePasswordForm()
+    if is_owner and form.validate_on_submit():
+        if not current_user.check_password(form.current_password.data):
+            flash('Current password is incorrect.', 'error')
+            return render_template('auth/profile.html', user=user, form=form, is_owner=is_owner)
+
+        current_user.set_password(form.new_password.data)
+        db.session.commit()
+        flash('Password updated successfully.', 'success')
+        return redirect(url_for('auth.profile', username=username))
+
+    return render_template('auth/profile.html', user=user, form=form, is_owner=is_owner)

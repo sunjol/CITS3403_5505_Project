@@ -59,3 +59,26 @@ class LoginForm(FlaskForm):
     )
     remember = BooleanField('Remember me')
     submit = SubmitField('Enter PromptShare')
+
+
+class ChangePasswordForm(FlaskForm):
+    """Form for changing the current user's password."""
+    current_password = PasswordField(
+        'Current Password',
+        validators=[DataRequired(message='Please enter your current password.')]
+    )
+    new_password = PasswordField(
+        'New Password',
+        validators=[
+            DataRequired(message='New password is required.'),
+            Length(min=8, message='Password must be at least 8 characters.')
+        ]
+    )
+    confirm_new_password = PasswordField(
+        'Confirm New Password',
+        validators=[
+            DataRequired(message='Please confirm your new password.'),
+            EqualTo('new_password', message='Passwords do not match.')
+        ]
+    )
+    submit = SubmitField('Update Password')

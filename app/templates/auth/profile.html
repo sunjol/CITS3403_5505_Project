@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PromptShare | {{ user.username }}'s Profile</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="{{ url_for('main.index') }}">PromptShare</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
+        <a class="nav-link" href="./search.html">Search</a>
+        <a class="nav-link" href="./optimise.html">Optimise</a>
+        <a class="nav-link" href="./dashboard.html">Dashboard</a>
+        <a class="nav-link" href="./add-prompt.html">Add Prompt</a>
+        {% if current_user.is_authenticated %}
+          <a class="nav-link active" href="{{ url_for('auth.profile', username=current_user.username) }}">{{ current_user.username }}</a>
+          <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+        {% else %}
+          <a class="nav-link" href="{{ url_for('auth.login') }}">Sign In</a>
+          <a class="btn btn-primary mini" href="{{ url_for('auth.register') }}">Get Started</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }}" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <section class="auth-wrap card" aria-labelledby="profile-heading">
+      <h1 id="profile-heading">{{ user.username }}'s Profile</h1>
+
+      <div class="profile-info">
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        {% if is_owner %}
+          <p><strong>Email:</strong> {{ user.email }}</p>
+        {% endif %}
+        <p><strong>User ID:</strong> {{ user.id }}</p>
+      </div>
+
+      {% if is_owner %}
+        <hr>
+        <h2 style="margin-top:2rem">Change Password</h2>
+        <p class="muted mini">Choose a strong password to keep your account secure.</p>
+
+        <form method="POST" novalidate style="display:grid;gap:0.8rem;margin-top:1rem">
+          {{ form.hidden_tag() }}
+
+          <div class="field-group">
+            {{ form.current_password(class="field", placeholder="Current password", autocomplete="current-password") }}
+            {% if form.current_password.errors %}
+              {% for error in form.current_password.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="field-group">
+            {{ form.new_password(class="field", placeholder="New password (minimum 8 characters)", autocomplete="new-password") }}
+            {% if form.new_password.errors %}
+              {% for error in form.new_password.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="field-group">
+            {{ form.confirm_new_password(class="field", placeholder="Confirm new password", autocomplete="new-password") }}
+            {% if form.confirm_new_password.errors %}
+              {% for error in form.confirm_new_password.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          {{ form.submit(class="btn btn-primary") }}
+        </form>
+      {% else %}
+        <p class="muted">This is {{ user.username }}'s public profile.</p>
+      {% endif %}
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
