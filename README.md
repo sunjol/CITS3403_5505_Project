@@ -47,8 +47,20 @@ project-root/
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
+flask --app app init-db
 flask --app app run
 ```
+
+## Optional Groq Model
+
+The optimise page uses the local fallback by default. To enable the `Use Groq Model` button, add these values to a local `.env` file:
+
+```text
+GROQ_API_KEY=your_key_here
+GROQ_MODEL=llama-3.1-8b-instant
+```
+
+The `.env` file is ignored by Git and must not be committed.
 
 ## Tests
 

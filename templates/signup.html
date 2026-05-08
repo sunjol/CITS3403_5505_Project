@@ -19,15 +19,27 @@
         <label for="username" class="visually-hidden">Username</label>
         <input class="field" type="text" id="username" name="username"
                placeholder="Username (e.g. prompt_master)" required minlength="3" maxlength="20"
-               autocomplete="username">
+               autocomplete="username"
+               value="{{ form.username.data or '' }}">
         <p class="mini muted field-help">3-20 characters, letters, numbers, and underscores only.</p>
+        {% if form.username.errors %}
+          <ul class="form-error-list mini">
+            {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
       </div>
 
       <div class="field-group">
         <label for="email" class="visually-hidden">Email</label>
         <input class="field" type="email" id="email" name="email"
                placeholder="you@example.com" required
-               autocomplete="email">
+               autocomplete="email"
+               value="{{ form.email.data or '' }}">
+        {% if form.email.errors %}
+          <ul class="form-error-list mini">
+            {% for error in form.email.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
       </div>
 
       <div class="field-group">
@@ -36,6 +48,11 @@
                placeholder="Password (minimum 8 characters)" required minlength="8"
                autocomplete="new-password">
         <p class="mini muted field-help">Use at least 8 characters with a mix of letters and numbers.</p>
+        {% if form.password.errors %}
+          <ul class="form-error-list mini">
+            {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
       </div>
 
       <div class="field-group">
@@ -43,6 +60,11 @@
         <input class="field" type="password" id="confirm-password" name="confirm_password"
                placeholder="Confirm password" required
                autocomplete="new-password">
+        {% if form.confirm_password.errors %}
+          <ul class="form-error-list mini">
+            {% for error in form.confirm_password.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
       </div>
 
       <button class="btn btn-primary" type="submit">Create Community Account</button>

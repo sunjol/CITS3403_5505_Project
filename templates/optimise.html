@@ -18,37 +18,34 @@
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       <label for="prompt-goal">Goal</label>
-      <input class="field" id="prompt-goal" name="goal" type="text" placeholder="Example: Generate better product descriptions" required>
+      <input class="field" id="prompt-goal" name="goal" type="text" placeholder="Example: Generate better product descriptions" value="{{ goal }}" required>
 
       <label for="draft-prompt">Original prompt</label>
-      <textarea class="editor-content" id="draft-prompt" name="prompt" placeholder="Paste your prompt draft here..." required>Write a product description for my headphones.</textarea>
+      <textarea class="editor-content" id="draft-prompt" name="prompt" placeholder="Paste your prompt draft here..." required>{{ draft_prompt }}</textarea>
 
       <div class="filter-grid">
         <div>
           <label for="tone">Tone</label>
           <select class="field" id="tone" name="tone">
-            <option>Clear and professional</option>
-            <option>Friendly</option>
-            <option>Academic</option>
-            <option>Persuasive</option>
+            {% for option in ["Clear and professional", "Friendly", "Academic", "Persuasive"] %}
+              <option {% if tone == option %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
           </select>
         </div>
         <div>
           <label for="format">Output format</label>
           <select class="field" id="format" name="format">
-            <option>Structured sections</option>
-            <option>Bullet points</option>
-            <option>Table</option>
-            <option>JSON</option>
+            {% for option in ["Structured sections", "Bullet points", "Table", "JSON"] %}
+              <option {% if output_format == option %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
           </select>
         </div>
         <div>
           <label for="audience">Audience</label>
           <select class="field" id="audience" name="audience">
-            <option>General users</option>
-            <option>Students</option>
-            <option>Developers</option>
-            <option>Business team</option>
+            {% for option in ["General users", "Students", "Developers", "Business team"] %}
+              <option {% if audience == option %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
           </select>
         </div>
       </div>
@@ -56,21 +53,22 @@
       <fieldset class="visibility-box">
         <legend>Optimisation focus</legend>
         <label class="radio-row">
-          <input type="checkbox" name="focus" value="clarity" checked>
+          <input type="checkbox" name="focus" value="clarity" {% if "clarity" in selected_focus %}checked{% endif %}>
           <span>Improve clarity and remove vague wording</span>
         </label>
         <label class="radio-row">
-          <input type="checkbox" name="focus" value="constraints" checked>
+          <input type="checkbox" name="focus" value="constraints" {% if "constraints" in selected_focus %}checked{% endif %}>
           <span>Add constraints and success criteria</span>
         </label>
         <label class="radio-row">
-          <input type="checkbox" name="focus" value="format">
+          <input type="checkbox" name="focus" value="format" {% if "format" in selected_focus %}checked{% endif %}>
           <span>Make the output format stricter</span>
         </label>
       </fieldset>
 
       <div class="form-actions">
         <button class="btn btn-primary" type="submit">Optimise Prompt</button>
+        <button class="btn btn-soft" type="submit" name="use_external_model" value="1">Use Groq Model</button>
         <button class="btn btn-soft" type="reset">Reset</button>
       </div>
     </form>
@@ -80,10 +78,15 @@
         <span class="chip success">Preview</span>
         <h2>Optimised output</h2>
         <div class="output-box">
-          <p><strong>Role:</strong> Act as an ecommerce copywriter for consumer audio products.</p>
-          <p><strong>Task:</strong> Write a concise product description for wireless headphones using the provided features.</p>
-          <p><strong>Constraints:</strong> Focus on customer benefits, avoid unsupported claims, keep the description under 120 words, and use a confident but accessible tone.</p>
-          <p><strong>Format:</strong> Return a headline, one short paragraph, and three bullet-point benefits.</p>
+          {% if optimised_prompt %}
+            <p class="mini muted">Generated with {{ model_source }}.</p>
+            <pre class="output-pre">{{ optimised_prompt }}</pre>
+          {% else %}
+            <p><strong>Role:</strong> Act as an ecommerce copywriter for consumer audio products.</p>
+            <p><strong>Task:</strong> Write a concise product description for wireless headphones using the provided features.</p>
+            <p><strong>Constraints:</strong> Focus on customer benefits, avoid unsupported claims, keep the description under 120 words, and use a confident but accessible tone.</p>
+            <p><strong>Format:</strong> Return a headline, one short paragraph, and three bullet-point benefits.</p>
+          {% endif %}
         </div>
       </section>
 
@@ -110,11 +113,11 @@
   <section class="compare-grid" style="margin-top:1rem">
     <article class="compare-box">
       <h3>Original</h3>
-      <pre>Write a product description for my headphones.</pre>
+      <pre>{{ draft_prompt }}</pre>
     </article>
     <article class="compare-box">
-      <h3>Improved structure</h3>
-      <pre>Role, task, context, constraints, and output format are separated so the model has fewer assumptions to guess.</pre>
+      <h3>{% if optimised_prompt %}Optimised{% else %}Improved structure{% endif %}</h3>
+      <pre>{% if optimised_prompt %}{{ optimised_prompt }}{% else %}Role, task, context, constraints, and output format are separated so the model has fewer assumptions to guess.{% endif %}</pre>
     </article>
   </section>
 </main>

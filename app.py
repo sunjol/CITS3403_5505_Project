@@ -18,6 +18,11 @@ def create_app(config_class=Config):
 
     app.register_blueprint(main_bp)
 
+    @app.cli.command("init-db")
+    def init_db_command():
+        db.create_all()
+        print("Initialised the SQLite database.")
+
     return app
 
 

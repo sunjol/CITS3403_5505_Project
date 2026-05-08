@@ -12,14 +12,20 @@
     <h1 id="login-heading" style="text-align:center;margin-top:0">Welcome Back</h1>
     <p class="muted" style="text-align:center">Sign in to ask questions, post answers, and vote on prompt threads.</p>
 
-    <form id="login-form" action="{{ url_for('main.login') }}" method="post" novalidate style="display:grid;gap:0.8rem">
+    <form id="login-form" action="{{ url_for('main.login', next=request.args.get('next')) }}" method="post" novalidate style="display:grid;gap:0.8rem">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       <div class="field-group">
         <label for="login-identifier" class="visually-hidden">Username or email</label>
         <input class="field" type="text" id="login-identifier" name="identifier"
                placeholder="Username or email" required
-               autocomplete="username">
+               autocomplete="username"
+               value="{{ form.identifier.data or '' }}">
+        {% if form.identifier.errors %}
+          <ul class="form-error-list mini">
+            {% for error in form.identifier.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
       </div>
 
       <div class="field-group">
@@ -31,11 +37,16 @@
           <button type="button" class="toggle-visibility" data-toggle-target="login-password"
                   aria-label="Show password" aria-pressed="false">Show</button>
         </div>
+        {% if form.password.errors %}
+          <ul class="form-error-list mini">
+            {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
       </div>
 
       <div class="login-row">
         <label class="checkbox-inline mini">
-          <input type="checkbox" id="remember-me" name="remember">
+          <input type="checkbox" id="remember-me" name="remember" {% if form.remember.data %}checked{% endif %}>
           <span>Remember me</span>
         </label>
         <a href="#" class="mini forgot-link">Forgot password?</a>

@@ -1,16 +1,40 @@
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, PasswordField, SelectField, StringField, TextAreaField
-from wtforms.validators import DataRequired, Email, EqualTo, Length
+from wtforms.validators import DataRequired, EqualTo, Length, Regexp, ValidationError
 
 
 class SignupForm(FlaskForm):
-    username = StringField("Username", validators=[DataRequired(), Length(min=3, max=20)])
-    email = StringField("Email", validators=[DataRequired(), Email()])
+    username = StringField(
+        "Username",
+        validators=[
+            DataRequired(),
+            Length(min=3, max=20),
+            Regexp(
+                r"^[A-Za-z0-9_]+$",
+                message="Use letters, numbers, and underscores only.",
+            ),
+        ],
+    )
+    email = StringField(
+        "Email",
+        validators=[
+            DataRequired(),
+            Regexp(
+                r"^[^\s@]+@[^\s@]+\.[^\s@]+$",
+                message="Please enter a valid email address.",
+            ),
+        ],
+    )
     password = PasswordField("Password", validators=[DataRequired(), Length(min=8)])
     confirm_password = PasswordField(
         "Confirm password",
         validators=[DataRequired(), EqualTo("password")],
     )
+
+    def validate_password(self, field):
+        password = field.data or ""
+        if not any(char.isalpha() for char in password) or not any(char.isdigit() for char in password):
+            raise ValidationError("Password must include both letters and numbers.")
 
 
 class LoginForm(FlaskForm):
