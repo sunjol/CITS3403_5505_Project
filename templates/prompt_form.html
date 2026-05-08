@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}PromptShare | Add Prompt{% endblock %}
+
+{% block content %}
+<main class="container page-wrap">
+  <section class="page-heading">
+    <div>
+      <span class="eyebrow">Create</span>
+      <h1>Add a new prompt</h1>
+      <p class="muted">Write the prompt, choose how it should be shared, and save it to your dashboard.</p>
+    </div>
+    <a class="btn btn-soft" href="{{ url_for('main.dashboard') }}">Back to Dashboard</a>
+  </section>
+
+  <section class="form-layout">
+    <form class="card prompt-form" action="{{ url_for('main.new_prompt') }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <label for="prompt-title">Prompt title</label>
+      <input class="field" id="prompt-title" name="title" type="text" placeholder="Example: Interview question generator" required>
+
+      <label for="prompt-category">Category</label>
+      <select class="field" id="prompt-category" name="category" required>
+        <option value="">Choose a category</option>
+        <option>Writing</option>
+        <option>Coding</option>
+        <option>Study</option>
+        <option>Marketing</option>
+        <option>Research</option>
+      </select>
+
+      <label for="prompt-text">Prompt</label>
+      <textarea class="editor-content" id="prompt-text" name="prompt" placeholder="Write your prompt here..." required></textarea>
+
+      <label for="prompt-notes">Notes or expected output</label>
+      <textarea class="field textarea-small" id="prompt-notes" name="notes" placeholder="Add context, constraints, or examples."></textarea>
+
+      <fieldset class="visibility-box">
+        <legend>Visibility</legend>
+        <label class="radio-row">
+          <input type="radio" name="visibility" value="public" checked>
+          <span>Public - share with the PromptShare community</span>
+        </label>
+        <label class="radio-row">
+          <input type="radio" name="visibility" value="private">
+          <span>Private - keep this prompt in your dashboard only</span>
+        </label>
+      </fieldset>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Save Prompt</button>
+        <button class="btn btn-soft" type="reset">Clear</button>
+      </div>
+    </form>
+
+    <aside class="card preview-panel">
+      <span class="chip">Draft</span>
+      <h2>Prompt preview</h2>
+      <p class="muted">Your saved prompt card will include a title, category, visibility, and short description for easier scanning.</p>
+
+      <div class="preview-card">
+        <div class="prompt-meta">
+          <span class="chip success">Private/Public</span>
+          <span class="muted mini">Version 1</span>
+        </div>
+        <h3>Untitled prompt</h3>
+        <p class="muted">Add a clear prompt with context, task, format, and constraints to get better AI responses.</p>
+      </div>
+
+      <div class="tip-box">
+        <h3>Helpful structure</h3>
+        <p class="muted">Role, task, context, constraints, and output format make prompts easier for others to understand and reuse.</p>
+      </div>
+    </aside>
+  </section>
+</main>
+{% endblock %}

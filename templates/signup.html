@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}PromptShare | Sign Up{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<main class="container">
+  <section class="auth-wrap card" aria-labelledby="signup-heading">
+    <h1 id="signup-heading">Create your PromptShare account</h1>
+    <p class="muted auth-intro">Join the community and start sharing better prompts.</p>
+
+    <form id="signup-form" class="auth-form" action="{{ url_for('main.signup') }}" method="post" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="field-group">
+        <label for="username" class="visually-hidden">Username</label>
+        <input class="field" type="text" id="username" name="username"
+               placeholder="Username (e.g. prompt_master)" required minlength="3" maxlength="20"
+               autocomplete="username">
+        <p class="mini muted field-help">3-20 characters, letters, numbers, and underscores only.</p>
+      </div>
+
+      <div class="field-group">
+        <label for="email" class="visually-hidden">Email</label>
+        <input class="field" type="email" id="email" name="email"
+               placeholder="you@example.com" required
+               autocomplete="email">
+      </div>
+
+      <div class="field-group">
+        <label for="password" class="visually-hidden">Password</label>
+        <input class="field" type="password" id="password" name="password"
+               placeholder="Password (minimum 8 characters)" required minlength="8"
+               autocomplete="new-password">
+        <p class="mini muted field-help">Use at least 8 characters with a mix of letters and numbers.</p>
+      </div>
+
+      <div class="field-group">
+        <label for="confirm-password" class="visually-hidden">Confirm password</label>
+        <input class="field" type="password" id="confirm-password" name="confirm_password"
+               placeholder="Confirm password" required
+               autocomplete="new-password">
+      </div>
+
+      <button class="btn btn-primary" type="submit">Create Community Account</button>
+    </form>
+
+    <p class="mini muted auth-switch">
+      Already registered? <a href="{{ url_for('main.login') }}">Sign in</a>
+    </p>
+  </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

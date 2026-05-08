@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}PromptShare | Profile{% endblock %}
+
+{% block content %}
+<main class="container page-wrap">
+  <section class="page-heading">
+    <div>
+      <span class="eyebrow">Account</span>
+      <h1>Your profile</h1>
+      <p class="muted">Manage account details, password settings, and prompt sharing preferences.</p>
+    </div>
+    <a class="btn btn-soft" href="{{ url_for('main.dashboard') }}">Back to Dashboard</a>
+  </section>
+
+  <section class="form-layout">
+    <form class="card prompt-form" action="{{ url_for('main.profile') }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <label for="profile-username">Username</label>
+      <input class="field" id="profile-username" name="username" type="text" placeholder="prompt_master">
+
+      <label for="profile-email">Email</label>
+      <input class="field" id="profile-email" name="email" type="email" placeholder="you@example.com">
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Save Profile</button>
+      </div>
+    </form>
+
+    <aside class="card preview-panel">
+      <span class="chip">Settings</span>
+      <h2>Account safety</h2>
+      <p class="muted">Passwords should be stored only as salted hashes. Raw passwords should never be saved.</p>
+    </aside>
+  </section>
+</main>
+{% endblock %}

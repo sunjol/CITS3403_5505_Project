@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}PromptShare | History{% endblock %}
+
+{% block content %}
+<main class="container page-wrap">
+  <section class="page-heading">
+    <div>
+      <span class="eyebrow">History</span>
+      <h1>Your optimisation history</h1>
+      <p class="muted">Review original and optimised prompt versions you have saved.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('main.optimise') }}">Optimise Prompt</a>
+  </section>
+
+  <section class="result-list">
+    <article class="prompt-result">
+      <div class="prompt-meta">
+        <span class="chip success">Saved</span>
+        <span class="muted mini">Example record</span>
+      </div>
+      <h2>Product description generator</h2>
+      <p class="muted">History entries will be populated from the Prompt model once authentication and persistence are wired in.</p>
+    </article>
+  </section>
+</main>
+{% endblock %}

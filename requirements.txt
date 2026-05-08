@@ -1,0 +1,7 @@
+Flask
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-WTF
+email-validator
+pytest
+selenium

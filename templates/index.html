@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}PromptShare | Home{% endblock %}
+
+{% block content %}
+<main class="container">
+  <section class="hero">
+    <span class="eyebrow">2026 AI Standard</span>
+    <h1>Engineer better <br><span>AI Behaviours.</span></h1>
+    <p>A community forum to ask, answer, and improve prompts for real LLM use cases. Think Stack Overflow, but for prompting.</p>
+    <div class="row" style="justify-content:center;flex-wrap:wrap">
+      <a class="btn btn-primary" href="{{ url_for('main.signup') }}">Join The Community</a>
+      <a class="btn btn-soft" href="{{ url_for('main.new_prompt') }}">Add Your First Prompt</a>
+    </div>
+  </section>
+
+  <section class="grid grid-3" style="padding-bottom:3.5rem">
+    <article class="card">
+      <h3 style="margin-top:0">Question & Answer Threads</h3>
+      <p class="muted">Post prompt problems, share improved answers, and learn from accepted solutions.</p>
+    </article>
+    <article class="card">
+      <h3 style="margin-top:0">Live Prompt Sandbox</h3>
+      <p class="muted">Test suggested prompts instantly and compare responses before posting your final answer.</p>
+    </article>
+    <article class="card">
+      <h3 style="margin-top:0">Community Prompt Library</h3>
+      <p class="muted">Discover top-voted prompt patterns by topic, model, and use case.</p>
+    </article>
+  </section>
+</main>
+{% endblock %}

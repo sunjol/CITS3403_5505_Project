@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}PromptShare{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="{{ url_for('main.index') }}">PromptShare</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a class="nav-link {{ 'active' if current_page == 'index' else '' }}" href="{{ url_for('main.index') }}">Home</a>
+        <a class="nav-link {{ 'active' if current_page == 'community' else '' }}" href="{{ url_for('main.community') }}">Community</a>
+        <a class="nav-link {{ 'active' if current_page == 'optimise' else '' }}" href="{{ url_for('main.optimise') }}">Optimise</a>
+        <a class="nav-link {{ 'active' if current_page == 'history' else '' }}" href="{{ url_for('main.history') }}">History</a>
+        <a class="nav-link {{ 'active' if current_page == 'dashboard' else '' }}" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+        <a class="nav-link {{ 'active' if current_page == 'profile' else '' }}" href="{{ url_for('main.profile') }}">Profile</a>
+        <a class="nav-link {{ 'active' if current_page == 'login' else '' }}" href="{{ url_for('main.login') }}">Sign In</a>
+        <a class="btn btn-primary mini" href="{{ url_for('main.signup') }}">Get Started</a>
+      </nav>
+    </div>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>
