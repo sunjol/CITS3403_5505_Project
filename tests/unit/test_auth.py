@@ -182,3 +182,48 @@ def test_external_model_block_falls_back_to_local(client, app, monkeypatch):
     with app.app_context():
         prompt = Prompt.query.filter_by(title="Improve blocked request").one()
         assert "External model fallback" in prompt.notes
+
+
+def test_groq_request_bypasses_proxy_environment(monkeypatch):
+    recorded = {}
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            return False
+
+        def read(self):
+            return b'{"choices":[{"message":{"content":"Polished prompt"}}]}'
+
+    class FakeOpener:
+        def open(self, request, timeout):
+            recorded["url"] = request.full_url
+            recorded["timeout"] = timeout
+            return FakeResponse()
+
+    def fake_proxy_handler(proxies):
+        recorded["proxies"] = proxies
+        return object()
+
+    def fake_build_opener(handler):
+        recorded["handler"] = handler
+        return FakeOpener()
+
+    monkeypatch.setattr(controllers.urllib.request, "ProxyHandler", fake_proxy_handler)
+    monkeypatch.setattr(controllers.urllib.request, "build_opener", fake_build_opener)
+
+    result = controllers.optimise_prompt_with_groq(
+        "Write about headphones.",
+        api_key="test-key",
+        api_url="https://api.groq.com/openai/v1/chat/completions",
+        model="test-model",
+        timeout=5,
+        user_agent="PromptShareTest/1.0",
+    )
+
+    assert result == "Polished prompt"
+    assert recorded["proxies"] == {}
+    assert recorded["url"] == "https://api.groq.com/openai/v1/chat/completions"
+    assert recorded["timeout"] == 5

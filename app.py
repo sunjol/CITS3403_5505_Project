@@ -3,7 +3,7 @@ from pathlib import Path
 from flask import Flask
 
 from config import Config
-from extensions import csrf, db, migrate
+from extensions import configure_sqlite_engine, csrf, db, migrate
 from routes import main_bp
 
 
@@ -13,6 +13,7 @@ def create_app(config_class=Config):
     Path(app.instance_path).mkdir(parents=True, exist_ok=True)
 
     db.init_app(app)
+    configure_sqlite_engine(app)
     migrate.init_app(app, db)
     csrf.init_app(app)
 
