@@ -3,7 +3,7 @@
 {% block title %}PromptShare | Optimise Prompt{% endblock %}
 
 {% block content %}
-<main class="container page-wrap">
+<main class="container page-wrap optimise-page">
   <section class="page-heading">
     <div>
       <span class="eyebrow">Improve</span>
@@ -23,52 +23,79 @@
       <label for="draft-prompt">Original prompt</label>
       <textarea class="editor-content" id="draft-prompt" name="prompt" placeholder="Paste your prompt draft here..." required>{{ draft_prompt }}</textarea>
 
-      <div class="filter-grid">
-        <div>
-          <label for="tone">Tone</label>
-          <select class="field" id="tone" name="tone">
-            {% for option in ["Clear and professional", "Friendly", "Academic", "Persuasive"] %}
-              <option {% if tone == option %}selected{% endif %}>{{ option }}</option>
-            {% endfor %}
-          </select>
+      <section class="selection-panel" aria-labelledby="selection-panel-title">
+        <div class="selection-heading">
+          <div>
+            <span class="chip">Controls</span>
+            <h2 id="selection-panel-title">Shape the rewrite</h2>
+          </div>
         </div>
-        <div>
-          <label for="format">Output format</label>
-          <select class="field" id="format" name="format">
-            {% for option in ["Structured sections", "Bullet points", "Table", "JSON"] %}
-              <option {% if output_format == option %}selected{% endif %}>{{ option }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div>
-          <label for="audience">Audience</label>
-          <select class="field" id="audience" name="audience">
-            {% for option in ["General users", "Students", "Developers", "Business team"] %}
-              <option {% if audience == option %}selected{% endif %}>{{ option }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
 
-      <fieldset class="visibility-box">
-        <legend>Optimisation focus</legend>
-        <label class="radio-row">
-          <input type="checkbox" name="focus" value="clarity" {% if "clarity" in selected_focus %}checked{% endif %}>
-          <span>Improve clarity and remove vague wording</span>
-        </label>
-        <label class="radio-row">
-          <input type="checkbox" name="focus" value="constraints" {% if "constraints" in selected_focus %}checked{% endif %}>
-          <span>Add constraints and success criteria</span>
-        </label>
-        <label class="radio-row">
-          <input type="checkbox" name="focus" value="format" {% if "format" in selected_focus %}checked{% endif %}>
-          <span>Make the output format stricter</span>
-        </label>
-      </fieldset>
+        <div class="selection-grid">
+          <div class="select-field">
+            <label for="tone">Tone</label>
+            <div class="select-shell">
+              <select class="field polished-select" id="tone" name="tone">
+                {% for option in ["Clear and professional", "Friendly", "Academic", "Persuasive"] %}
+                  <option {% if tone == option %}selected{% endif %}>{{ option }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="select-field">
+            <label for="format">Output format</label>
+            <div class="select-shell">
+              <select class="field polished-select" id="format" name="format">
+                {% for option in ["Structured sections", "Bullet points", "Table", "JSON"] %}
+                  <option {% if output_format == option %}selected{% endif %}>{{ option }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="select-field">
+            <label for="audience">Audience</label>
+            <div class="select-shell">
+              <select class="field polished-select" id="audience" name="audience">
+                {% for option in ["General users", "Students", "Developers", "Business team"] %}
+                  <option {% if audience == option %}selected{% endif %}>{{ option }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="select-field model-option">
+            <span class="option-label">Model</span>
+            <label class="model-toggle">
+              <input class="model-toggle-input" type="checkbox" name="use_external_model" value="1" {% if use_external_model %}checked{% endif %}>
+              <span class="model-toggle-mark" aria-hidden="true"></span>
+              <span class="model-toggle-copy">
+                <span>Use Groq Model</span>
+                <small>Apply the external model when you optimise.</small>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <fieldset class="visibility-box focus-box">
+          <legend>Optimisation focus</legend>
+          <div class="focus-grid">
+            <label class="radio-row focus-option">
+              <input type="checkbox" name="focus" value="clarity" {% if "clarity" in selected_focus %}checked{% endif %}>
+              <span>Improve clarity and remove vague wording</span>
+            </label>
+            <label class="radio-row focus-option">
+              <input type="checkbox" name="focus" value="constraints" {% if "constraints" in selected_focus %}checked{% endif %}>
+              <span>Add constraints and success criteria</span>
+            </label>
+            <label class="radio-row focus-option">
+              <input type="checkbox" name="focus" value="format" {% if "format" in selected_focus %}checked{% endif %}>
+              <span>Make the output format stricter</span>
+            </label>
+          </div>
+        </fieldset>
+      </section>
 
       <div class="form-actions">
         <button class="btn btn-primary" type="submit">Optimise Prompt</button>
-        <button class="btn btn-soft" type="submit" name="use_external_model" value="1">Use Groq Model</button>
         <button class="btn btn-soft" type="reset">Reset</button>
       </div>
     </form>

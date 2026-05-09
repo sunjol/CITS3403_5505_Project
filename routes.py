@@ -134,6 +134,7 @@ def optimise():
         "output_format": "Structured sections",
         "audience": "General users",
         "selected_focus": ["clarity", "constraints"],
+        "use_external_model": False,
         "optimised_prompt": None,
         "model_source": None,
     }
@@ -148,6 +149,7 @@ def optimise():
                 "output_format": request.form.get("format", "Structured sections"),
                 "audience": request.form.get("audience", "General users"),
                 "selected_focus": request.form.getlist("focus"),
+                "use_external_model": request.form.get("use_external_model") == "1",
             }
         )
 
@@ -155,7 +157,7 @@ def optimise():
             flash("Please enter a goal and prompt before optimising.", "warning")
             return render_template("optimise.html", **context)
 
-        use_external_model = request.form.get("use_external_model") == "1"
+        use_external_model = context["use_external_model"]
         try:
             if use_external_model:
                 optimised_prompt = optimise_prompt_with_groq(
