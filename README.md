@@ -62,8 +62,26 @@ GROQ_MODEL=llama-3.1-8b-instant
 
 The `.env` file is ignored by Git and must not be committed.
 
-## Tests
+## Running Tests
 
+The project uses pytest for both unit and Selenium tests.
+
+**Run all tests:**
 ```bash
-pytest
+pytest -v
 ```
+
+**Run only unit tests:**
+```bash
+pytest tests/test_auth.py -v
+```
+
+**Run only Selenium tests:**
+```bash
+pytest tests/selenium/ -v
+```
+
+### Prerequisites
+
+- Google Chrome must be installed for Selenium tests (the `webdriver-manager` package auto-downloads matching ChromeDriver)
+- Tests use an in-memory SQLite database — no setup required
