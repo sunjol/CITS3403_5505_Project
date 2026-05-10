@@ -28,5 +28,9 @@ class User(UserMixin, db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    """Tell Flask-Login how to load a user from a user_id."""
-    return User.query.get(int(user_id))
+    """Tell Flask-Login how to load a user from a user_id.
+    
+    Uses SQLAlchemy 2.x style db.session.get() instead of the deprecated
+    User.query.get() to avoid LegacyAPIWarning.
+    """
+    return db.session.get(User, int(user_id))
