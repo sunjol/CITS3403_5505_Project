@@ -30,7 +30,7 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     TIMEZONE = os.environ.get("APP_TIMEZONE", "Australia/Perth")
-    DAILY_PROMPT_QUOTA = int(os.environ.get("DAILY_PROMPT_QUOTA", "10"))
+    DAILY_PROMPT_QUOTA = int(os.environ.get("DAILY_PROMPT_QUOTA", "20"))
     GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
     GROQ_API_URL = os.environ.get(
         "GROQ_API_URL",

@@ -1,3 +1,4 @@
+import re
 from functools import wraps
 
 from flask import (
@@ -17,10 +18,21 @@ from extensions import db
 from forms import LoginForm, SignupForm
 from models import Prompt, User
 from controllers import (
+    COMMUNITY_SORT_OPTIONS,
+    COMMUNITY_VISIBILITY_OPTIONS,
     ExternalModelError,
+    HISTORY_TYPE_OPTIONS,
+    HISTORY_VISIBILITY_OPTIONS,
+    PROMPT_CATEGORIES,
+    community_prompts,
+    consume_quota,
+    ensure_quota_available,
+    normalise_history_filters,
+    normalise_community_filters,
     optimise_prompt,
     optimise_prompt_with_groq,
-    quota_summary,
+    quota_usage_for_user,
+    user_history_prompts,
 )
 
 
@@ -32,7 +44,8 @@ def login_required(view_func):
     def wrapped_view(**kwargs):
         if g.user is None:
             flash("Please sign in to continue.", "warning")
-            return redirect(url_for("main.login", next=request.path))
+            next_url = request.full_path if request.query_string else request.path
+            return redirect(url_for("main.login", next=next_url))
         return view_func(**kwargs)
 
     return wrapped_view
@@ -139,6 +152,20 @@ def optimise():
         "model_source": None,
     }
 
+    if request.method == "GET":
+        similar_prompt_id = request.args.get("similar_prompt_id", type=int)
+        if similar_prompt_id:
+            source_prompt = Prompt.query.filter(
+                Prompt.id == similar_prompt_id,
+                or_(Prompt.is_public.is_(True), Prompt.user_id == g.user.id),
+            ).first()
+            if source_prompt:
+                context["goal"] = source_prompt.title
+                context["draft_prompt"] = source_prompt.original_prompt
+                flash("Prompt loaded. Adjust the draft, then optimise it.", "success")
+            else:
+                flash("That prompt is private or no longer available.", "warning")
+
     if request.method == "POST":
         prompt_text = request.form.get("prompt", "").strip()
         context.update(
@@ -159,6 +186,12 @@ def optimise():
 
         use_external_model = context["use_external_model"]
         try:
+            ensure_quota_available(
+                g.user,
+                current_app.config["DAILY_PROMPT_QUOTA"],
+                current_app.config.get("TIMEZONE", "Australia/Perth"),
+            )
+
             if use_external_model:
                 optimised_prompt = optimise_prompt_with_groq(
                     prompt_text,
@@ -193,6 +226,11 @@ def optimise():
                 is_public=False,
             )
             db.session.add(prompt)
+            consume_quota(
+                g.user,
+                current_app.config["DAILY_PROMPT_QUOTA"],
+                current_app.config.get("TIMEZONE", "Australia/Perth"),
+            )
             db.session.commit()
 
             context["optimised_prompt"] = optimised_prompt
@@ -216,6 +254,11 @@ def optimise():
                 is_public=False,
             )
             db.session.add(prompt)
+            consume_quota(
+                g.user,
+                current_app.config["DAILY_PROMPT_QUOTA"],
+                current_app.config.get("TIMEZONE", "Australia/Perth"),
+            )
             db.session.commit()
 
             context["model_source"] = "Local fallback"
@@ -230,29 +273,225 @@ def optimise():
 
 @main_bp.route("/community")
 def community():
-    return render_template("community.html", current_page="community")
+    filters = normalise_community_filters(request.args, g.user)
+    if g.user is None and request.args.get("visibility", "").startswith("my_"):
+        flash("Please sign in to view your own prompts.", "warning")
+
+    prompts = community_prompts(filters, g.user)
+    return render_template(
+        "community.html",
+        current_page="community",
+        prompts=prompts,
+        filters=filters,
+        categories=PROMPT_CATEGORIES,
+        visibility_options=COMMUNITY_VISIBILITY_OPTIONS,
+        sort_options=COMMUNITY_SORT_OPTIONS,
+    )
 
 
 @main_bp.route("/history")
 @login_required
 def history():
-    return render_template("history.html", current_page="history")
+    filters = normalise_history_filters(request.args)
+    prompts = user_history_prompts(g.user, filters)
+    categories = PROMPT_CATEGORIES + ("Optimisation",)
+    return render_template(
+        "history.html",
+        current_page="history",
+        prompts=prompts,
+        filters=filters,
+        categories=categories,
+        type_options=HISTORY_TYPE_OPTIONS,
+        visibility_options=HISTORY_VISIBILITY_OPTIONS,
+        sort_options=COMMUNITY_SORT_OPTIONS,
+    )
+
+
+@main_bp.post("/prompts/<int:prompt_id>/visibility")
+@login_required
+def update_prompt_visibility(prompt_id):
+    prompt = Prompt.query.filter_by(id=prompt_id, user_id=g.user.id).first()
+    if not prompt:
+        flash("That prompt could not be found in your history.", "warning")
+        return redirect(url_for("main.history"))
+
+    visibility = request.form.get("visibility")
+    if visibility not in {"public", "private"}:
+        flash("Choose a valid visibility option.", "warning")
+        return redirect(url_for("main.history"))
+
+    prompt.is_public = visibility == "public"
+    db.session.commit()
+    flash(f"Prompt visibility updated to {visibility}.", "success")
+    return redirect(url_for("main.history", visibility=visibility))
 
 
 @main_bp.route("/dashboard")
 @login_required
 def dashboard():
-    quota = quota_summary(current_app.config["DAILY_PROMPT_QUOTA"])
-    return render_template("dashboard.html", current_page="dashboard", quota=quota)
+    quota = quota_usage_for_user(
+        g.user,
+        current_app.config["DAILY_PROMPT_QUOTA"],
+        current_app.config.get("TIMEZONE", "Australia/Perth"),
+    )
+    user_prompts = Prompt.query.filter_by(user_id=g.user.id)
+    stats = {
+        "saved_prompts": user_prompts.count(),
+        "public_prompts": user_prompts.filter(Prompt.is_public.is_(True)).count(),
+        "optimised_prompts": user_prompts.filter(Prompt.optimised_prompt.isnot(None)).count(),
+    }
+    recent_prompts = (
+        Prompt.query.filter_by(user_id=g.user.id)
+        .order_by(Prompt.updated_at.desc())
+        .limit(5)
+        .all()
+    )
+    recent_activity = [
+        f"{prompt.title} was {'optimised' if prompt.optimised_prompt else 'saved'} as {'public' if prompt.is_public else 'private'}."
+        for prompt in recent_prompts[:3]
+    ]
+    return render_template(
+        "dashboard.html",
+        current_page="dashboard",
+        quota=quota,
+        stats=stats,
+        recent_prompts=recent_prompts,
+        recent_activity=recent_activity,
+    )
 
 
 @main_bp.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-    return render_template("profile.html", current_page="profile")
+    profile_errors = []
+    password_errors = []
+
+    if request.method == "POST":
+        action = request.form.get("action")
+
+        if action == "profile":
+            username = request.form.get("username", "").strip()
+            email = request.form.get("email", "").strip().lower()
+
+            if not username:
+                profile_errors.append("Username is required.")
+            elif not re.fullmatch(r"[A-Za-z0-9_]{3,20}", username):
+                profile_errors.append("Username must be 3-20 characters and use letters, numbers, or underscores only.")
+
+            if not email:
+                profile_errors.append("Email is required.")
+            elif not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email):
+                profile_errors.append("Please enter a valid email address.")
+
+            existing_user = User.query.filter(
+                User.id != g.user.id,
+                or_(User.username == username, User.email == email),
+            ).first()
+            if existing_user:
+                if existing_user.username == username:
+                    profile_errors.append("That username is already taken.")
+                if existing_user.email == email:
+                    profile_errors.append("That email is already registered.")
+
+            if not profile_errors:
+                g.user.username = username
+                g.user.email = email
+                db.session.commit()
+                flash("Profile updated successfully.", "success")
+                return redirect(url_for("main.profile"))
+
+        elif action == "password":
+            current_password = request.form.get("current_password", "")
+            new_password = request.form.get("new_password", "")
+            confirm_password = request.form.get("confirm_password", "")
+
+            if not g.user.check_password(current_password):
+                password_errors.append("Current password is incorrect.")
+            if len(new_password) < 8:
+                password_errors.append("New password must be at least 8 characters.")
+            if not any(char.isalpha() for char in new_password) or not any(char.isdigit() for char in new_password):
+                password_errors.append("New password must include both letters and numbers.")
+            if new_password != confirm_password:
+                password_errors.append("New passwords do not match.")
+
+            if not password_errors:
+                g.user.set_password(new_password)
+                db.session.commit()
+                flash("Password updated successfully.", "success")
+                return redirect(url_for("main.profile"))
+        else:
+            profile_errors.append("Choose a valid profile action.")
+
+    return render_template(
+        "profile.html",
+        current_page="profile",
+        profile_errors=profile_errors,
+        password_errors=password_errors,
+    )
 
 
 @main_bp.route("/prompts/new", methods=["GET", "POST"])
 @login_required
 def new_prompt():
-    return render_template("prompt_form.html", current_page="new_prompt")
+    values = {
+        "title": "",
+        "category": "",
+        "prompt": "",
+        "notes": "",
+        "visibility": "public",
+    }
+    errors = []
+
+    if request.method == "POST":
+        values.update(
+            {
+                "title": request.form.get("title", "").strip(),
+                "category": request.form.get("category", "").strip(),
+                "prompt": request.form.get("prompt", "").strip(),
+                "notes": request.form.get("notes", "").strip(),
+                "visibility": request.form.get("visibility", "private"),
+            }
+        )
+
+        if not values["title"]:
+            errors.append("Prompt title is required.")
+        elif len(values["title"]) > 160:
+            errors.append("Prompt title must be 160 characters or fewer.")
+
+        if values["category"] not in PROMPT_CATEGORIES:
+            errors.append("Choose a valid category.")
+
+        if not values["prompt"]:
+            errors.append("Prompt text is required.")
+
+        if values["visibility"] not in {"public", "private"}:
+            errors.append("Choose whether the prompt is public or private.")
+
+        if not errors:
+            prompt = Prompt(
+                user_id=g.user.id,
+                title=values["title"],
+                category=values["category"],
+                original_prompt=values["prompt"],
+                notes=values["notes"],
+                is_public=values["visibility"] == "public",
+            )
+            db.session.add(prompt)
+            db.session.commit()
+
+            visibility_label = "public" if prompt.is_public else "private"
+            flash(f"Prompt saved as {visibility_label}.", "success")
+            return redirect(
+                url_for(
+                    "main.community",
+                    visibility="my_public" if prompt.is_public else "my_private",
+                )
+            )
+
+    return render_template(
+        "prompt_form.html",
+        current_page="new_prompt",
+        categories=PROMPT_CATEGORIES,
+        values=values,
+        errors=errors,
+    )

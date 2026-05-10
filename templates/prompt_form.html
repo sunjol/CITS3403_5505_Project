@@ -17,33 +17,39 @@
     <form class="card prompt-form" action="{{ url_for('main.new_prompt') }}" method="post">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
+      {% if errors %}
+        <ul class="form-error-list mini">
+          {% for error in errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
       <label for="prompt-title">Prompt title</label>
-      <input class="field" id="prompt-title" name="title" type="text" placeholder="Example: Interview question generator" required>
+      <input class="field" id="prompt-title" name="title" type="text" placeholder="Example: Interview question generator" value="{{ values.title }}" required>
 
       <label for="prompt-category">Category</label>
       <select class="field" id="prompt-category" name="category" required>
         <option value="">Choose a category</option>
-        <option>Writing</option>
-        <option>Coding</option>
-        <option>Study</option>
-        <option>Marketing</option>
-        <option>Research</option>
+        {% for category in categories %}
+          <option value="{{ category }}" {% if values.category == category %}selected{% endif %}>{{ category }}</option>
+        {% endfor %}
       </select>
 
       <label for="prompt-text">Prompt</label>
-      <textarea class="editor-content" id="prompt-text" name="prompt" placeholder="Write your prompt here..." required></textarea>
+      <textarea class="editor-content" id="prompt-text" name="prompt" placeholder="Write your prompt here..." required>{{ values.prompt }}</textarea>
 
       <label for="prompt-notes">Notes or expected output</label>
-      <textarea class="field textarea-small" id="prompt-notes" name="notes" placeholder="Add context, constraints, or examples."></textarea>
+      <textarea class="field textarea-small" id="prompt-notes" name="notes" placeholder="Add context, constraints, or examples.">{{ values.notes }}</textarea>
 
       <fieldset class="visibility-box">
         <legend>Visibility</legend>
         <label class="radio-row">
-          <input type="radio" name="visibility" value="public" checked>
+          <input type="radio" name="visibility" value="public" {% if values.visibility == "public" %}checked{% endif %}>
           <span>Public - share with the PromptShare community</span>
         </label>
         <label class="radio-row">
-          <input type="radio" name="visibility" value="private">
+          <input type="radio" name="visibility" value="private" {% if values.visibility == "private" %}checked{% endif %}>
           <span>Private - keep this prompt in your dashboard only</span>
         </label>
       </fieldset>

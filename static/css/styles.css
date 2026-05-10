@@ -29,6 +29,13 @@ body {
   color: var(--text);
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
 h1,
 h2,
 h3,
@@ -207,6 +214,7 @@ samp {
   border-radius: 12px;
   background: #0f1219;
   color: var(--text);
+  font-family: var(--font-body);
   padding: 0.85rem 0.95rem;
 }
 .field:focus { outline: 2px solid #2f72d6; outline-offset: 0; }
@@ -235,7 +243,7 @@ samp {
   border-radius: 16px;
   background: #0b0f16;
   color: var(--text);
-  font-family: var(--font-code);
+  font-family: var(--font-body);
   padding: 1rem;
   line-height: 1.45;
   resize: vertical;
@@ -383,6 +391,7 @@ samp {
 .prompt-form label,
 .visibility-box legend {
   color: #d9e2f7;
+  font-family: var(--font-body);
   font-weight: 650;
   font-size: 0.9rem;
 }
@@ -412,7 +421,17 @@ samp {
   gap: 0.8rem;
   flex-wrap: wrap;
 }
+.history-filters {
+  margin-bottom: 1rem;
+}
+.inline-form {
+  margin: 0;
+}
 .preview-panel {
+  display: grid;
+  gap: 1rem;
+}
+.optimise-page .preview-panel > .card:first-child {
   display: grid;
   gap: 1rem;
 }
@@ -558,6 +577,7 @@ samp {
 }
 .option-label {
   color: #d9e2f7;
+  font-family: var(--font-body);
   font-weight: 650;
   font-size: 0.9rem;
 }
@@ -637,6 +657,20 @@ samp {
   display: flex;
   gap: 0.45rem;
   flex-wrap: wrap;
+}
+.review-box {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.85rem;
+}
+.review-box summary {
+  cursor: pointer;
+  color: #d9e2f7;
+  font-weight: 650;
+}
+.review-box .compare-grid {
+  margin-top: 0.85rem;
 }
 .quality-item {
   border: 1px solid var(--line);

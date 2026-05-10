@@ -22,7 +22,7 @@
     <article class="stat-card">
       <span class="stat-label">Used today</span>
       <strong>{{ quota.used }}</strong>
-      <span class="muted mini">Resets at 12:00 am Perth time</span>
+      <span class="muted mini">Next reset: {{ quota.next_reset_label }}</span>
     </article>
     <article class="stat-card">
       <span class="stat-label">Remaining</span>
@@ -31,8 +31,8 @@
     </article>
     <article class="stat-card">
       <span class="stat-label">Saved prompts</span>
-      <strong>12</strong>
-      <span class="muted mini">3 updated this week</span>
+      <strong>{{ stats.saved_prompts }}</strong>
+      <span class="muted mini">{{ stats.public_prompts }} public, {{ stats.optimised_prompts }} optimised</span>
     </article>
   </section>
 
@@ -43,41 +43,31 @@
         <a class="mini" href="{{ url_for('main.new_prompt') }}">Create prompt</a>
       </div>
 
-      <article class="prompt-item">
-        <div>
-          <div class="prompt-meta">
-            <span class="chip">Public</span>
-            <span class="muted mini">Updated today</span>
+      {% for prompt in recent_prompts %}
+        <article class="prompt-item">
+          <div>
+            <div class="prompt-meta">
+              <span class="chip {{ 'success' if not prompt.is_public else '' }}">{{ "Public" if prompt.is_public else "Private" }}</span>
+              <span class="chip {{ 'success' if prompt.optimised_prompt else '' }}">{{ "Optimised" if prompt.optimised_prompt else "Saved draft" }}</span>
+              <span class="muted mini">Updated {{ prompt.updated_at.strftime("%d %b %Y") }}</span>
+            </div>
+            <h3>{{ prompt.title }}</h3>
+            <p class="muted">{{ prompt.notes or prompt.original_prompt|truncate(150) }}</p>
           </div>
-          <h3>Product description generator</h3>
-          <p class="muted">Turns feature notes into clear ecommerce copy with tone and audience controls.</p>
-        </div>
-        <a class="btn btn-soft mini" href="{{ url_for('main.new_prompt') }}">Edit</a>
-      </article>
-
-      <article class="prompt-item">
-        <div>
-          <div class="prompt-meta">
-            <span class="chip success">Private</span>
-            <span class="muted mini">Updated yesterday</span>
+          <a class="btn btn-soft mini" href="{{ url_for('main.optimise', similar_prompt_id=prompt.id) }}">Open</a>
+        </article>
+      {% else %}
+        <article class="prompt-item">
+          <div>
+            <div class="prompt-meta">
+              <span class="chip">No prompts</span>
+            </div>
+            <h3>Your workspace is ready</h3>
+            <p class="muted">Create or optimise a prompt to populate your dashboard.</p>
           </div>
-          <h3>Study plan builder</h3>
-          <p class="muted">Creates a weekly learning plan from goals, deadlines, and available study hours.</p>
-        </div>
-        <a class="btn btn-soft mini" href="{{ url_for('main.new_prompt') }}">Edit</a>
-      </article>
-
-      <article class="prompt-item">
-        <div>
-          <div class="prompt-meta">
-            <span class="chip">Public</span>
-            <span class="muted mini">Updated 3 days ago</span>
-          </div>
-          <h3>Code review checklist</h3>
-          <p class="muted">Reviews pull requests for bugs, maintainability, test coverage, and edge cases.</p>
-        </div>
-        <a class="btn btn-soft mini" href="{{ url_for('main.new_prompt') }}">Edit</a>
-      </article>
+          <a class="btn btn-soft mini" href="{{ url_for('main.new_prompt') }}">Create</a>
+        </article>
+      {% endfor %}
     </div>
 
     <aside class="dashboard-side">
@@ -102,9 +92,11 @@
       <section class="card">
         <h2>Recent activity</h2>
         <ul class="activity-list">
-          <li><span></span> Emma upvoted your code review checklist.</li>
-          <li><span></span> You saved version 4 of Study plan builder.</li>
-          <li><span></span> Product description generator became public.</li>
+          {% for item in recent_activity %}
+            <li><span></span> {{ item }}</li>
+          {% else %}
+            <li><span></span> No recent prompt activity yet.</li>
+          {% endfor %}
         </ul>
       </section>
     </aside>

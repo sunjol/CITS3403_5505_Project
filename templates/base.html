@@ -19,7 +19,7 @@
           <a class="nav-link {{ 'active' if current_page == 'history' else '' }}" href="{{ url_for('main.history') }}">History</a>
           <a class="nav-link {{ 'active' if current_page == 'dashboard' else '' }}" href="{{ url_for('main.dashboard') }}">Dashboard</a>
           <a class="nav-link {{ 'active' if current_page == 'profile' else '' }}" href="{{ url_for('main.profile') }}">Profile</a>
-          <form class="nav-form" action="{{ url_for('main.logout') }}" method="post">
+          <form class="nav-form" action="{{ url_for('main.logout') }}" method="post" data-logout-confirm data-confirm-message="Are you sure you want to log out?">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button class="nav-link nav-button" type="submit">Log Out</button>
           </form>
@@ -43,6 +43,16 @@
 
   {% block content %}{% endblock %}
 
+  <script>
+    document.querySelectorAll("[data-logout-confirm]").forEach((form) => {
+      form.addEventListener("submit", (event) => {
+        const message = form.dataset.confirmMessage || "Are you sure you want to log out?";
+        if (!window.confirm(message)) {
+          event.preventDefault();
+        }
+      });
+    });
+  </script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

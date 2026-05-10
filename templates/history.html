@@ -8,20 +8,110 @@
     <div>
       <span class="eyebrow">History</span>
       <h1>Your optimisation history</h1>
-      <p class="muted">Review original and optimised prompt versions you have saved.</p>
+      <p class="muted">Review your saved drafts, optimised prompts, and sharing status from one private workspace.</p>
     </div>
     <a class="btn btn-primary" href="{{ url_for('main.optimise') }}">Optimise Prompt</a>
   </section>
 
-  <section class="result-list">
-    <article class="prompt-result">
-      <div class="prompt-meta">
-        <span class="chip success">Saved</span>
-        <span class="muted mini">Example record</span>
+  <form class="card prompt-form history-filters" action="{{ url_for('main.history') }}" method="get">
+    <label for="history-query">Search history</label>
+    <div class="search-bar">
+      <input class="field" id="history-query" name="query" type="search" placeholder="Search title, prompt text, or notes" value="{{ filters.query }}">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+
+    <div class="filter-grid">
+      <div>
+        <label for="history-type">Type</label>
+        <select class="field" id="history-type" name="type">
+          {% for value, label in type_options.items() %}
+            <option value="{{ value }}" {% if filters.type == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
       </div>
-      <h2>Product description generator</h2>
-      <p class="muted">History entries will be populated from the Prompt model once authentication and persistence are wired in.</p>
-    </article>
+      <div>
+        <label for="history-visibility">Visibility</label>
+        <select class="field" id="history-visibility" name="visibility">
+          {% for value, label in visibility_options.items() %}
+            <option value="{{ value }}" {% if filters.visibility == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="history-category">Category</label>
+        <select class="field" id="history-category" name="category">
+          <option value="">All categories</option>
+          {% for category in categories %}
+            <option value="{{ category }}" {% if filters.category == category %}selected{% endif %}>{{ category }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="history-sort">Sort by</label>
+        <select class="field" id="history-sort" name="sort">
+          {% for value, label in sort_options.items() %}
+            <option value="{{ value }}" {% if filters.sort == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </form>
+
+  <section class="result-list history-list">
+    <div class="section-title">
+      <h2>{{ prompts|length }} record{% if prompts|length != 1 %}s{% endif %} found</h2>
+      {% if filters.query or filters.type != "all" or filters.visibility != "all" or filters.category %}
+        <a class="mini" href="{{ url_for('main.history') }}">Clear filters</a>
+      {% endif %}
+    </div>
+
+    {% for prompt in prompts %}
+      <article class="prompt-result">
+        <div class="prompt-meta">
+          <span class="chip">{{ prompt.category }}</span>
+          <span class="chip {{ 'success' if prompt.optimised_prompt else '' }}">{{ "Optimised" if prompt.optimised_prompt else "Saved draft" }}</span>
+          <span class="chip {{ 'success' if not prompt.is_public else '' }}">{{ "Public" if prompt.is_public else "Private" }}</span>
+          <span class="muted mini">{{ prompt.created_at.strftime("%d %b %Y") }}</span>
+        </div>
+        <h2>{{ prompt.title }}</h2>
+        <p class="muted">{{ prompt.notes or prompt.original_prompt|truncate(180) }}</p>
+
+        <details class="review-box">
+          <summary>Review prompt details</summary>
+          <div class="compare-grid">
+            <div class="compare-box">
+              <h3>Original</h3>
+              <pre>{{ prompt.original_prompt }}</pre>
+            </div>
+            {% if prompt.optimised_prompt %}
+              <div class="compare-box">
+                <h3>Optimised</h3>
+                <pre>{{ prompt.optimised_prompt }}</pre>
+              </div>
+            {% endif %}
+          </div>
+        </details>
+
+        <div class="result-footer">
+          <form action="{{ url_for('main.update_prompt_visibility', prompt_id=prompt.id) }}" method="post" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="visibility" value="{{ 'private' if prompt.is_public else 'public' }}">
+            <button class="btn btn-soft mini" type="submit">
+              Make {{ "Private" if prompt.is_public else "Public" }}
+            </button>
+          </form>
+          <a class="btn btn-soft mini" href="{{ url_for('main.optimise', similar_prompt_id=prompt.id) }}">Optimise Again</a>
+        </div>
+      </article>
+    {% else %}
+      <article class="prompt-result">
+        <div class="prompt-meta">
+          <span class="chip">No history</span>
+        </div>
+        <h2>No matching history yet</h2>
+        <p class="muted">Save or optimise a prompt, then return here to review and manage it.</p>
+      </article>
+    {% endfor %}
   </section>
 </main>
 {% endblock %}

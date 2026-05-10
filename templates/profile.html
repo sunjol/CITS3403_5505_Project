@@ -14,24 +14,77 @@
   </section>
 
   <section class="form-layout">
-    <form class="card prompt-form" action="{{ url_for('main.profile') }}" method="post">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="dashboard-main">
+      <form class="card prompt-form" action="{{ url_for('main.profile') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="profile">
 
-      <label for="profile-username">Username</label>
-      <input class="field" id="profile-username" name="username" type="text" placeholder="prompt_master">
+        {% if profile_errors %}
+          <ul class="form-error-list mini">
+            {% for error in profile_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
 
-      <label for="profile-email">Email</label>
-      <input class="field" id="profile-email" name="email" type="email" placeholder="you@example.com">
+        <label for="profile-username">Username</label>
+        <input class="field" id="profile-username" name="username" type="text" value="{{ current_user.username }}" required>
 
-      <div class="form-actions">
-        <button class="btn btn-primary" type="submit">Save Profile</button>
-      </div>
-    </form>
+        <label for="profile-email">Email</label>
+        <input class="field" id="profile-email" name="email" type="email" value="{{ current_user.email }}" required>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Save Profile</button>
+        </div>
+      </form>
+
+      <form class="card prompt-form" action="{{ url_for('main.profile') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="password">
+
+        <h2>Change password</h2>
+
+        {% if password_errors %}
+          <ul class="form-error-list mini">
+            {% for error in password_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <label for="current-password">Current password</label>
+        <input class="field" id="current-password" name="current_password" type="password" autocomplete="current-password" required>
+
+        <label for="new-password">New password</label>
+        <input class="field" id="new-password" name="new_password" type="password" autocomplete="new-password" required>
+
+        <label for="confirm-password">Confirm new password</label>
+        <input class="field" id="confirm-password" name="confirm_password" type="password" autocomplete="new-password" required>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Update Password</button>
+        </div>
+      </form>
+    </div>
 
     <aside class="card preview-panel">
       <span class="chip">Settings</span>
       <h2>Account safety</h2>
       <p class="muted">Passwords should be stored only as salted hashes. Raw passwords should never be saved.</p>
+      <div class="quality-list">
+        <div class="quality-item">
+          <div class="score-row">
+            <h3>Username</h3>
+            <span class="muted mini">{{ current_user.username }}</span>
+          </div>
+        </div>
+        <div class="quality-item">
+          <div class="score-row">
+            <h3>Email</h3>
+            <span class="muted mini">{{ current_user.email }}</span>
+          </div>
+        </div>
+      </div>
     </aside>
   </section>
 </main>
