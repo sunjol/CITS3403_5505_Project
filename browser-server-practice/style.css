@@ -1,0 +1,259 @@
+/* Base layout */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f4f6f8;
+  color: #222;
+}
+
+/* Header */
+header {
+  background: #1f2937;
+  color: #ffffff;
+  padding: 24px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0 0 8px 0;
+}
+
+header p {
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* Main container */
+main {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+/* Sections */
+section {
+  background: #ffffff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+section h2 {
+  margin-top: 0;
+}
+
+/* Buttons */
+button {
+  padding: 10px 14px;
+  margin: 6px 6px 6px 0;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Inputs */
+input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Status messages */
+#getStatus,
+#postStatus {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* Posts list */
+#posts {
+  margin-top: 16px;
+}
+
+#posts div {
+  border-left: 4px solid #2563eb;
+  padding-left: 12px;
+  margin-bottom: 12px;
+}
+
+#posts h3 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+}
+
+#posts p {
+  margin: 0;
+  font-size: 14px;
+  color: #444;
+}
+
+/* Code blocks / output */
+pre {
+  background: #111827;
+  color: #e5e7eb;
+  padding: 14px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 13px;
+}
+
+/* Small responsive tweak */
+@media (max-width: 600px) {
+  header {
+    padding: 16px;
+  }
+
+  section {
+    padding: 16px;
+  }
+}/* Base layout */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f4f6f8;
+  color: #222;
+}
+
+/* Header */
+header {
+  background: #1f2937;
+  color: #ffffff;
+  padding: 24px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0 0 8px 0;
+}
+
+header p {
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* Main container */
+main {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+/* Sections */
+section {
+  background: #ffffff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+section h2 {
+  margin-top: 0;
+}
+
+/* Buttons */
+button {
+  padding: 10px 14px;
+  margin: 6px 6px 6px 0;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Inputs */
+input,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Status messages */
+#getStatus,
+#postStatus {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* Posts list */
+#posts {
+  margin-top: 16px;
+}
+
+#posts div {
+  border-left: 4px solid #2563eb;
+  padding-left: 12px;
+  margin-bottom: 12px;
+}
+
+#posts h3 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+}
+
+#posts p {
+  margin: 0;
+  font-size: 14px;
+  color: #444;
+}
+
+/* Code blocks / output */
+pre {
+  background: #111827;
+  color: #e5e7eb;
+  padding: 14px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 13px;
+}
+
+/* Small responsive tweak */
+@media (max-width: 600px) {
+  header {
+    padding: 16px;
+  }
+
+  section {
+    padding: 16px;
+  }
+}

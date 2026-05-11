@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Client-side JS Demo</title>
+    </head>
+    <body>
+        <h2 id="greeting">Hello</h2>
+
+        <input type="text" id="nameInput" placeholder="Enter your name" />
+        <button id="saveBtn">Save</button>
+
+        <button id="loadBtn">Load Saved Name</button>
+
+        <script>
+            // --- DOM access ---
+            const input = document.getElementById("nameInput");
+            const greeting = document.getElementById("greeting");
+            const saveBtn = document.getElementById("saveBtn");
+            const loadBtn = document.getElementById("loadBtn");
+
+            // --- Event handling ---
+            saveBtn.addEventListener("click", function () {
+                const name = input.value;
+
+                // --- Web Storage (localStorage) ---
+                localStorage.setItem("username", name);
+
+                // --- Cookies ---
+                document.cookie = "username=" + name + "; path=/";
+
+                greeting.textContent = "Saved, " + name;
+            });
+
+            loadBtn.addEventListener("click", function () {
+                // Load from localStorage
+                const storedName = localStorage.getItem("username");
+
+                if (storedName) {
+                    greeting.textContent = "Welcome back, " + storedName;
+                } else {
+                    greeting.textContent = "No name saved";
+                }
+            });
+        </script>
+    </body>
+</html>

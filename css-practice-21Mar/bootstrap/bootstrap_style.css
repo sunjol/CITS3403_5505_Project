@@ -1,0 +1,34 @@
+body {
+  background: linear-gradient(135deg, #eef4ff 0%, #f8fbff 100%);
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #0d6efd 0%, #4f8dfd 100%);
+}
+
+.section-card {
+  border: 0;
+  border-radius: 1rem;
+}
+
+.card,
+.table,
+.form-control,
+.form-select,
+.btn,
+.list-group-item {
+  border-radius: 0.75rem;
+}
+
+.card-img-top {
+  height: 240px;
+  object-fit: cover;
+}
+
+code {
+  font-size: 0.95em;
+}
+
+footer p {
+  margin-bottom: 0;
+}
