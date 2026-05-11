@@ -5,27 +5,27 @@
 {% block content %}
 <main class="container">
   <section class="hero home-hero">
-    <span class="eyebrow">2026 AI Standard</span>
+    <span class="eyebrow">Prompt workspace</span>
     <h1>Engineer better <br><span>AI Behaviours.</span></h1>
-    <p>A community forum to ask, answer, and improve prompts for real LLM use cases. Think Stack Overflow, but for prompting.</p>
+    <p>Optimise rough prompt drafts, save reusable versions, and browse public examples shared by other users.</p>
     <div class="row hero-actions">
-      <a class="btn btn-primary" href="{{ url_for('main.signup') }}">Join The Community</a>
+      <a class="btn btn-primary" href="{{ url_for('main.signup') }}">Join the Community</a>
       <a class="btn btn-soft" href="{{ url_for('main.new_prompt') }}">Add Your First Prompt</a>
     </div>
   </section>
 
   <section class="grid grid-3 home-feature-grid">
     <article class="card">
-      <h3 style="margin-top:0">Question & Answer Threads</h3>
-      <p class="muted">Post prompt problems, share improved answers, and learn from accepted solutions.</p>
+      <h3>Prompt optimisation</h3>
+      <p class="muted">Turn unclear instructions into structured prompts with role, context, constraints, and output format.</p>
     </article>
     <article class="card">
-      <h3 style="margin-top:0">Live Prompt Sandbox</h3>
-      <p class="muted">Test suggested prompts instantly and compare responses before posting your final answer.</p>
+      <h3>Saved history</h3>
+      <p class="muted">Keep private drafts and optimised prompts in your own workspace, with visibility controls when you want to share.</p>
     </article>
     <article class="card">
-      <h3 style="margin-top:0">Community Prompt Library</h3>
-      <p class="muted">Discover top-voted prompt patterns by topic, model, and use case.</p>
+      <h3>Community prompt library</h3>
+      <p class="muted">Discover public prompt patterns by topic and reuse good examples as a starting point.</p>
     </article>
   </section>
 </main>

@@ -1,5 +1,6 @@
 """Selenium fixtures for the root Flask app."""
 import importlib.util
+import os
 import sys
 import threading
 import time
@@ -9,6 +10,7 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from webdriver_manager.core.os_manager import ChromeType
 from webdriver_manager.chrome import ChromeDriverManager
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -69,8 +71,15 @@ def browser():
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1280,800")
 
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=options)
+    driver_path = os.environ.get("CHROMEDRIVER_PATH")
+    try:
+        service = Service(
+            driver_path or ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()
+        )
+        driver = webdriver.Chrome(service=service, options=options)
+    except Exception as error:
+        pytest.skip(f"ChromeDriver is unavailable for Selenium tests: {error}")
+
     driver.implicitly_wait(5)
 
     yield driver

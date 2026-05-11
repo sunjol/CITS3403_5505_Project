@@ -172,6 +172,9 @@ samp {
 .home-feature-grid {
   padding-bottom: 4.5rem;
 }
+.home-feature-grid h3 {
+  margin-top: 0;
+}
 .home-feature-grid .card {
   animation: feature-fade 0.7s ease both;
 }
@@ -717,10 +720,18 @@ samp {
   width: var(--score, 70%);
   background: linear-gradient(90deg, #22c55e, var(--blue));
 }
+.score-42 { --score: 42%; }
+.score-78 { --score: 78%; }
+.score-86 { --score: 86%; }
+.score-88 { --score: 88%; }
+.score-92 { --score: 92%; }
 .compare-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+}
+.compare-section {
+  margin-top: 1rem;
 }
 .compare-box {
   border: 1px solid var(--line);
