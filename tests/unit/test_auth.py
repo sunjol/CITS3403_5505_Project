@@ -319,7 +319,7 @@ def test_community_owner_can_filter_private_prompts(client):
         visibility="private",
     )
 
-    response = client.get("/community?visibility=my")
+    response = client.get("/community?visibility=private")
 
     assert b"Private interview coach" in response.data
     assert b"Private" in response.data
@@ -330,14 +330,16 @@ def test_community_view_options_are_simplified(client):
 
     response = client.get("/community")
 
-    assert b">All</option>" in response.data
-    assert b"Community Public Posts" in response.data
-    assert b"My Posts" in response.data
-    assert b"My public posts" not in response.data
-    assert b"My private posts" not in response.data
+    assert b"<label for=\"visibility\">Visibility</label>" in response.data
+    assert b">Public</option>" in response.data
+    assert b">Private</option>" in response.data
+    assert b">All</option>" not in response.data
+    assert b"Community Public Posts" not in response.data
+    assert b"My Posts" not in response.data
+    assert b"<label for=\"category\">Category</label>" not in response.data
 
 
-def test_community_search_and_category_filters(client):
+def test_community_search_filters_public_prompts(client):
     signup(client, username="alice_user", email="alice@example.com")
     save_prompt(
         client,
@@ -356,13 +358,13 @@ def test_community_search_and_category_filters(client):
     client.post("/logout", follow_redirects=True)
     signup(client, username="bob_user", email="bob@example.com")
 
-    response = client.get("/community?query=python&category=Coding")
+    response = client.get("/community?query=python&visibility=public")
 
     assert b"Python unit test helper" in response.data
     assert b"Marketing headline writer" not in response.data
 
 
-def test_community_all_includes_public_posts_and_own_private_posts(client):
+def test_community_private_visibility_shows_only_own_private_prompts(client):
     signup(client, username="alice_user", email="alice@example.com")
     save_prompt(
         client,
@@ -382,10 +384,10 @@ def test_community_all_includes_public_posts_and_own_private_posts(client):
         visibility="private",
     )
 
-    response = client.get("/community?visibility=all")
+    response = client.get("/community?visibility=private")
 
-    assert b"Alice public checklist" in response.data
     assert b"Bob private plan" in response.data
+    assert b"Alice public checklist" not in response.data
 
 
 def test_community_posts_can_be_deleted_by_owner(client, app):
@@ -402,7 +404,7 @@ def test_community_posts_can_be_deleted_by_owner(client, app):
 
     response = client.post(
         f"/prompts/{prompt_id}/delete",
-        data={"next": "/community?visibility=my"},
+        data={"next": "/community?visibility=private"},
         follow_redirects=True,
     )
 
@@ -504,6 +506,7 @@ def test_history_shows_only_current_users_prompts(client):
 
     assert b"Bob public draft" in response.data
     assert b"Alice private draft" not in response.data
+    assert b"<label for=\"history-category\">Category</label>" not in response.data
 
 
 def test_history_filters_saved_and_optimised_prompts(client):

@@ -14,13 +14,15 @@
   </section>
 
   <form class="card prompt-form history-filters" action="{{ url_for('main.history') }}" method="get">
-    <label for="history-query">Search history</label>
-    <div class="search-bar">
-      <input class="field" id="history-query" name="query" type="search" placeholder="Search title, prompt text, or notes" value="{{ filters.query }}">
+    <div class="history-search-row">
+      <div>
+        <label for="history-query">Search history</label>
+        <input class="field" id="history-query" name="query" type="search" placeholder="Search title, prompt text, or notes" value="{{ filters.query }}">
+      </div>
       <button class="btn btn-primary" type="submit">Search</button>
     </div>
 
-    <div class="filter-grid">
+    <div class="filter-grid history-filter-grid">
       <div>
         <label for="history-type">Type</label>
         <select class="field" id="history-type" name="type">
@@ -38,15 +40,6 @@
         </select>
       </div>
       <div>
-        <label for="history-category">Category</label>
-        <select class="field" id="history-category" name="category">
-          <option value="">All categories</option>
-          {% for category in categories %}
-            <option value="{{ category }}" {% if filters.category == category %}selected{% endif %}>{{ category }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div>
         <label for="history-sort">Sort by</label>
         <select class="field" id="history-sort" name="sort">
           {% for value, label in sort_options.items() %}
@@ -60,7 +53,7 @@
   <section class="result-list history-list">
     <div class="section-title">
       <h2>{{ prompts|length }} record{% if prompts|length != 1 %}s{% endif %} found</h2>
-      {% if filters.query or filters.type != "all" or filters.visibility != "all" or filters.category %}
+      {% if filters.query or filters.type != "all" or filters.visibility != "all" or filters.sort != "newest" %}
         <a class="mini" href="{{ url_for('main.history') }}">Clear filters</a>
       {% endif %}
     </div>
@@ -68,7 +61,6 @@
     {% for prompt in prompts %}
       <article class="prompt-result">
         <div class="prompt-meta">
-          <span class="chip">{{ prompt.category }}</span>
           <span class="chip {{ 'success' if prompt.optimised_prompt else '' }}">{{ "Optimised" if prompt.optimised_prompt else "Saved draft" }}</span>
           <span class="chip {{ 'success' if not prompt.is_public else '' }}">{{ "Public" if prompt.is_public else "Private" }}</span>
           <span class="muted mini">{{ prompt.created_at.strftime("%d %b %Y") }}</span>

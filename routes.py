@@ -274,8 +274,8 @@ def optimise():
 @main_bp.route("/community")
 def community():
     filters = normalise_community_filters(request.args, g.user)
-    if g.user is None and request.args.get("visibility") == "my":
-        flash("Please sign in to view your own prompts.", "warning")
+    if g.user is None and request.args.get("visibility") == "private":
+        flash("Please sign in to view your private prompts.", "warning")
 
     prompts = community_prompts(filters, g.user)
     return render_template(
@@ -283,7 +283,6 @@ def community():
         current_page="community",
         prompts=prompts,
         filters=filters,
-        categories=PROMPT_CATEGORIES,
         visibility_options=COMMUNITY_VISIBILITY_OPTIONS,
         sort_options=COMMUNITY_SORT_OPTIONS,
     )
@@ -313,13 +312,11 @@ def delete_prompt(prompt_id):
 def history():
     filters = normalise_history_filters(request.args)
     prompts = user_history_prompts(g.user, filters)
-    categories = PROMPT_CATEGORIES + ("Optimisation",)
     return render_template(
         "history.html",
         current_page="history",
         prompts=prompts,
         filters=filters,
-        categories=categories,
         type_options=HISTORY_TYPE_OPTIONS,
         visibility_options=HISTORY_VISIBILITY_OPTIONS,
         sort_options=COMMUNITY_SORT_OPTIONS,
@@ -500,7 +497,7 @@ def new_prompt():
 
             visibility_label = "public" if prompt.is_public else "private"
             flash(f"Prompt saved as {visibility_label}.", "success")
-            return redirect(url_for("main.community", visibility="my"))
+            return redirect(url_for("main.community", visibility=visibility_label))
 
     return render_template(
         "prompt_form.html",
