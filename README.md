@@ -54,8 +54,6 @@ project-root/
 | 24433446 | Sunjol Singh Paul | sunjol |
 | 24975803 | Shravan S Kumar Suresh Kumar | ShravansKumar |
 
-Complete this table before submission with each team member's details.
-
 ## Launch
 
 ```bash
