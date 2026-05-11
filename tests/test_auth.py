@@ -1,8 +1,7 @@
 """Unit tests for the auth module."""
-import pytest
 
-from app import db
-from app.models import User
+from extensions import db
+from models import User
 
 
 class TestPasswordHashing:
@@ -51,7 +50,7 @@ class TestUserModel:
 
 
 class TestRegistration:
-    """Tests for the /auth/register route."""
+    """Tests for the /signup route."""
 
     def test_duplicate_username_rejected(self, app, client):
         """Trying to register with an existing username should fail."""
@@ -63,11 +62,11 @@ class TestRegistration:
             db.session.commit()
 
         # Try to register the same username again
-        response = client.post('/auth/register', data={
+        response = client.post('/signup', data={
             'username': 'taken',
             'email': 'different@example.com',
             'password': 'password123',
             'confirm_password': 'password123'
         }, follow_redirects=True)
 
-        assert b'Username already taken' in response.data
+        assert b'That username is already taken.' in response.data

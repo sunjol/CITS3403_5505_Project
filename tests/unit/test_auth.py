@@ -319,10 +319,22 @@ def test_community_owner_can_filter_private_prompts(client):
         visibility="private",
     )
 
-    response = client.get("/community?visibility=my_private")
+    response = client.get("/community?visibility=my")
 
     assert b"Private interview coach" in response.data
     assert b"Private" in response.data
+
+
+def test_community_view_options_are_simplified(client):
+    signup(client)
+
+    response = client.get("/community")
+
+    assert b">All</option>" in response.data
+    assert b"Community Public Posts" in response.data
+    assert b"My Posts" in response.data
+    assert b"My public posts" not in response.data
+    assert b"My private posts" not in response.data
 
 
 def test_community_search_and_category_filters(client):
@@ -348,6 +360,80 @@ def test_community_search_and_category_filters(client):
 
     assert b"Python unit test helper" in response.data
     assert b"Marketing headline writer" not in response.data
+
+
+def test_community_all_includes_public_posts_and_own_private_posts(client):
+    signup(client, username="alice_user", email="alice@example.com")
+    save_prompt(
+        client,
+        title="Alice public checklist",
+        category="Coding",
+        prompt="Review a pull request.",
+        visibility="public",
+    )
+    client.post("/logout", follow_redirects=True)
+
+    signup(client, username="bob_user", email="bob@example.com")
+    save_prompt(
+        client,
+        title="Bob private plan",
+        category="Study",
+        prompt="Plan my private study week.",
+        visibility="private",
+    )
+
+    response = client.get("/community?visibility=all")
+
+    assert b"Alice public checklist" in response.data
+    assert b"Bob private plan" in response.data
+
+
+def test_community_posts_can_be_deleted_by_owner(client, app):
+    signup(client)
+    save_prompt(
+        client,
+        title="Delete me from community",
+        category="Writing",
+        prompt="Temporary prompt.",
+        visibility="private",
+    )
+    with app.app_context():
+        prompt_id = Prompt.query.filter_by(title="Delete me from community").one().id
+
+    response = client.post(
+        f"/prompts/{prompt_id}/delete",
+        data={"next": "/community?visibility=my"},
+        follow_redirects=True,
+    )
+
+    assert b"Deleted &#39;Delete me from community&#39;." in response.data
+    with app.app_context():
+        assert db.session.get(Prompt, prompt_id) is None
+
+
+def test_user_cannot_delete_another_users_prompt(client, app):
+    signup(client, username="alice_user", email="alice@example.com")
+    save_prompt(
+        client,
+        title="Alice protected prompt",
+        category="Writing",
+        prompt="Do not delete this.",
+        visibility="public",
+    )
+    with app.app_context():
+        prompt_id = Prompt.query.filter_by(title="Alice protected prompt").one().id
+    client.post("/logout", follow_redirects=True)
+    signup(client, username="bob_user", email="bob@example.com")
+
+    response = client.post(
+        f"/prompts/{prompt_id}/delete",
+        data={"next": "/community"},
+        follow_redirects=True,
+    )
+
+    assert b"That prompt could not be found in your account." in response.data
+    with app.app_context():
+        assert db.session.get(Prompt, prompt_id) is not None
 
 
 def test_optimise_similar_prefills_public_prompt(client, app):
@@ -473,6 +559,33 @@ def test_history_can_update_prompt_visibility(client, app):
     with app.app_context():
         prompt = Prompt.query.filter_by(title="Shareable checklist").one()
         assert prompt.is_public is True
+
+
+def test_dashboard_recent_prompt_can_be_deleted(client, app):
+    signup(client)
+    save_prompt(
+        client,
+        title="Dashboard delete prompt",
+        category="Coding",
+        prompt="Remove from dashboard.",
+        visibility="public",
+    )
+    with app.app_context():
+        prompt_id = Prompt.query.filter_by(title="Dashboard delete prompt").one().id
+
+    dashboard = client.get("/dashboard")
+    assert b"Dashboard delete prompt" in dashboard.data
+    assert b"Delete" in dashboard.data
+
+    response = client.post(
+        f"/prompts/{prompt_id}/delete",
+        data={"next": "/dashboard"},
+        follow_redirects=True,
+    )
+
+    assert b"Deleted &#39;Dashboard delete prompt&#39;." in response.data
+    with app.app_context():
+        assert db.session.get(Prompt, prompt_id) is None
 
 
 def test_optimise_consumes_daily_quota_and_dashboard_shows_usage(client, app):

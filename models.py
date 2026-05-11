@@ -1,8 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from extensions import db
+
+
+def utc_now():
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 class User(db.Model):
@@ -10,7 +14,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False, index=True)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=False)
 
     prompts = db.relationship("Prompt", back_populates="user", lazy=True)
     quota_usages = db.relationship("DailyQuotaUsage", back_populates="user", lazy=True)
@@ -31,11 +35,11 @@ class Prompt(db.Model):
     optimised_prompt = db.Column(db.Text)
     notes = db.Column(db.Text)
     is_public = db.Column(db.Boolean, default=False, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=utc_now,
+        onupdate=utc_now,
         nullable=False,
     )
 
@@ -47,11 +51,11 @@ class DailyQuotaUsage(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     usage_date = db.Column(db.Date, nullable=False)
     used_count = db.Column(db.Integer, default=0, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=utc_now,
+        onupdate=utc_now,
         nullable=False,
     )
 

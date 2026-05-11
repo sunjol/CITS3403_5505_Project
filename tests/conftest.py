@@ -1,30 +1,38 @@
-"""Shared pytest fixtures for the test suite."""
+"""Shared pytest fixtures for the root Flask app."""
+import importlib.util
 import sys
 from pathlib import Path
 
-# Add project root to sys.path so imports work for both blueprint and flat structures
+import pytest
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-import pytest
-
-from app import create_app, db
-from app.models import User
 from config import Config
+from extensions import db
+from models import User
+
+
+APP_MODULE_PATH = PROJECT_ROOT / "app.py"
+APP_SPEC = importlib.util.spec_from_file_location("promptshare_root_app", APP_MODULE_PATH)
+APP_MODULE = importlib.util.module_from_spec(APP_SPEC)
+APP_SPEC.loader.exec_module(APP_MODULE)
+create_app = APP_MODULE.create_app
 
 
 class TestConfig(Config):
-    """Configuration for tests — uses an in-memory SQLite database."""
+    """Configuration for tests - uses an in-memory SQLite database."""
+
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     WTF_CSRF_ENABLED = False
-    SECRET_KEY = 'test-secret-key'
+    SECRET_KEY = "test-secret-key"
+    TIMEZONE = "Australia/Perth"
 
 
 @pytest.fixture
 def app():
-    """Create a fresh Flask app for each test."""
     app = create_app(TestConfig)
 
     with app.app_context():
@@ -36,22 +44,19 @@ def app():
 
 @pytest.fixture
 def client(app):
-    """Create a test client for sending requests to the app."""
     return app.test_client()
 
 
 @pytest.fixture
 def runner(app):
-    """Create a CLI test runner."""
     return app.test_cli_runner()
 
 
 @pytest.fixture
 def test_user(app):
-    """Create a sample test user for authentication tests."""
     with app.app_context():
-        user = User(username='testuser', email='test@example.com')
-        user.set_password('password123')
+        user = User(username="testuser", email="test@example.com")
+        user.set_password("password123")
         db.session.add(user)
         db.session.commit()
         db.session.refresh(user)

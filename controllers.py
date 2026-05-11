@@ -14,10 +14,9 @@ class ExternalModelError(RuntimeError):
 
 PROMPT_CATEGORIES = ("Writing", "Coding", "Study", "Marketing", "Research")
 COMMUNITY_VISIBILITY_OPTIONS = {
-    "community": "Community public posts",
-    "my_public": "My public posts",
-    "my_private": "My private posts",
-    "my_all": "All my posts",
+    "all": "All",
+    "community": "Community Public Posts",
+    "my": "My Posts",
 }
 COMMUNITY_SORT_OPTIONS = {
     "newest": "Newest",
@@ -228,12 +227,12 @@ def consume_quota(user, limit, timezone_name):
 
 
 def normalise_community_filters(args, user=None):
-    visibility = args.get("visibility", "community")
+    visibility = args.get("visibility", "all")
     if visibility not in COMMUNITY_VISIBILITY_OPTIONS:
-        visibility = "community"
+        visibility = "all"
 
-    if user is None and visibility.startswith("my_"):
-        visibility = "community"
+    if user is None and visibility == "my":
+        visibility = "all"
 
     category = args.get("category", "")
     if category not in PROMPT_CATEGORIES:
@@ -255,22 +254,18 @@ def community_prompts(filters, user=None):
     prompt_query = Prompt.query.join(Prompt.user)
     visibility = filters["visibility"]
 
-    if visibility == "my_public":
-        prompt_query = prompt_query.filter(
-            Prompt.user_id == user.id,
-            Prompt.is_public.is_(True),
-        )
-    elif visibility == "my_private":
-        prompt_query = prompt_query.filter(
-            Prompt.user_id == user.id,
-            Prompt.is_public.is_(False),
-        )
-    elif visibility == "my_all":
+    if visibility == "my":
         prompt_query = prompt_query.filter(Prompt.user_id == user.id)
-    else:
+    elif visibility == "community":
         prompt_query = prompt_query.filter(Prompt.is_public.is_(True))
         if user is not None:
             prompt_query = prompt_query.filter(Prompt.user_id != user.id)
+    elif user is not None:
+        prompt_query = prompt_query.filter(
+            (Prompt.is_public.is_(True)) | (Prompt.user_id == user.id)
+        )
+    else:
+        prompt_query = prompt_query.filter(Prompt.is_public.is_(True))
 
     if filters["category"]:
         prompt_query = prompt_query.filter(Prompt.category == filters["category"])

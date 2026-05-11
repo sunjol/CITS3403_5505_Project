@@ -1,6 +1,16 @@
 # CITS3403_5505_Project
 
-PromptShare is a Flask web application for polishing AI prompts, saving prompt history, and browsing intentionally shared community prompt examples.
+PromptShare is a Flask web application for polishing AI prompts, saving prompt history, managing daily optimisation quota, and browsing intentionally shared community prompt examples.
+
+## Features
+
+- Sign up, log in, log out, and manage profile details.
+- Change account password with current-password verification.
+- Optimise prompts with a local fallback optimiser and optional Groq API support.
+- Save public or private prompts to a SQLite database.
+- Browse public community prompts and review your own public/private prompts.
+- View personal history with search, filtering, visibility controls, and "Optimise Again".
+- Track daily optimisation quota on the dashboard. The default limit is 20 per user per day and resets at 12:00 am in the configured timezone, defaulting to Australia/Perth.
 
 ## Project Structure
 
@@ -41,47 +51,55 @@ project-root/
 | --- | --- | --- |
 | TODO | TODO | TODO |
 
+Complete this table before submission with each team member's details.
+
 ## Launch
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
-flask --app app init-db
-flask --app app run
+flask --app run db upgrade
+flask --app run run
+```
+
+Then open `http://127.0.0.1:5000`.
+
+You can also run the app directly with `python run.py`.
+
+## Configuration
+
+Copy `.env.example` to `.env` for local overrides. Keep `.env`, API keys, and local database files out of Git.
+
+```text
+SECRET_KEY=replace-with-a-real-secret-key
+APP_TIMEZONE=Australia/Perth
+DAILY_PROMPT_QUOTA=20
 ```
 
 ## Optional Groq Model
 
-The optimise page uses the local fallback by default. To enable the `Use Groq Model` button, add these values to a local `.env` file:
+The optimise page uses the local fallback by default. To enable the `Use Groq Model` button, add these values to `.env`:
 
 ```text
 GROQ_API_KEY=your_key_here
 GROQ_MODEL=llama-3.1-8b-instant
 ```
 
-The `.env` file is ignored by Git and must not be committed.
+If Groq is unavailable or blocks the request, the app falls back to the local optimiser so the project remains markable.
 
 ## Running Tests
 
-The project uses pytest for both unit and Selenium tests.
+Run the root app unit tests:
 
-**Run all tests:**
 ```bash
-pytest -v
+pytest tests/unit tests/test_auth.py -v
 ```
 
-**Run only unit tests:**
+Run Selenium tests:
+
 ```bash
-pytest tests/test_auth.py -v
+pytest tests/selenium -v
 ```
 
-**Run only Selenium tests:**
-```bash
-pytest tests/selenium/ -v
-```
-
-### Prerequisites
-
-- Google Chrome must be installed for Selenium tests (the `webdriver-manager` package auto-downloads matching ChromeDriver)
-- Tests use an in-memory SQLite database — no setup required
+Selenium tests require Google Chrome. The `webdriver-manager` package downloads the matching ChromeDriver.
