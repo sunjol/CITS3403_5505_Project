@@ -68,7 +68,7 @@
               <input class="model-toggle-input" type="checkbox" name="use_external_model" value="1" {% if use_external_model %}checked{% endif %}>
               <span class="model-toggle-mark" aria-hidden="true"></span>
               <span class="model-toggle-copy">
-                <span>Use Groq Model</span>
+                <span>Use Groq model</span>
                 <small>Apply the external model when you optimise.</small>
               </span>
             </label>
@@ -124,20 +124,20 @@
             <h3>Before</h3>
             <span class="muted mini">42%</span>
           </div>
-          <div class="score-meter" style="--score:42%"><span></span></div>
+          <div class="score-meter score-42"><span></span></div>
         </div>
         <div class="quality-item">
           <div class="score-row">
             <h3>After</h3>
             <span class="muted mini">88%</span>
           </div>
-          <div class="score-meter" style="--score:88%"><span></span></div>
+          <div class="score-meter score-88"><span></span></div>
         </div>
       </section>
     </aside>
   </section>
 
-  <section class="compare-grid" style="margin-top:1rem">
+  <section class="compare-grid compare-section">
     <article class="compare-box">
       <h3>Original</h3>
       <pre>{{ draft_prompt }}</pre>

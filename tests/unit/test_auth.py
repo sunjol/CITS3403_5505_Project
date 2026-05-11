@@ -144,7 +144,7 @@ def test_protected_page_redirects_to_login(client):
     response = client.get("/dashboard", follow_redirects=True)
 
     assert b"Please sign in to continue." in response.data
-    assert b"Welcome Back" in response.data
+    assert b"Welcome back" in response.data
 
 
 def test_optimise_uses_local_model_by_default(client, app):
