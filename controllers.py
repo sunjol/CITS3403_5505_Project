@@ -14,9 +14,8 @@ class ExternalModelError(RuntimeError):
 
 PROMPT_CATEGORIES = ("Writing", "Coding", "Study", "Marketing", "Research")
 COMMUNITY_VISIBILITY_OPTIONS = {
-    "all": "All",
-    "community": "Community Public Posts",
-    "my": "My Posts",
+    "public": "Public",
+    "private": "Private",
 }
 COMMUNITY_SORT_OPTIONS = {
     "newest": "Newest",
@@ -227,16 +226,12 @@ def consume_quota(user, limit, timezone_name):
 
 
 def normalise_community_filters(args, user=None):
-    visibility = args.get("visibility", "all")
+    visibility = args.get("visibility", "public")
     if visibility not in COMMUNITY_VISIBILITY_OPTIONS:
-        visibility = "all"
+        visibility = "public"
 
-    if user is None and visibility == "my":
-        visibility = "all"
-
-    category = args.get("category", "")
-    if category not in PROMPT_CATEGORIES:
-        category = ""
+    if user is None and visibility == "private":
+        visibility = "public"
 
     sort = args.get("sort", "newest")
     if sort not in COMMUNITY_SORT_OPTIONS:
@@ -244,7 +239,6 @@ def normalise_community_filters(args, user=None):
 
     return {
         "query": args.get("query", "").strip(),
-        "category": category,
         "visibility": visibility,
         "sort": sort,
     }
@@ -254,21 +248,13 @@ def community_prompts(filters, user=None):
     prompt_query = Prompt.query.join(Prompt.user)
     visibility = filters["visibility"]
 
-    if visibility == "my":
-        prompt_query = prompt_query.filter(Prompt.user_id == user.id)
-    elif visibility == "community":
-        prompt_query = prompt_query.filter(Prompt.is_public.is_(True))
-        if user is not None:
-            prompt_query = prompt_query.filter(Prompt.user_id != user.id)
-    elif user is not None:
+    if visibility == "private" and user is not None:
         prompt_query = prompt_query.filter(
-            (Prompt.is_public.is_(True)) | (Prompt.user_id == user.id)
+            Prompt.user_id == user.id,
+            Prompt.is_public.is_(False),
         )
     else:
         prompt_query = prompt_query.filter(Prompt.is_public.is_(True))
-
-    if filters["category"]:
-        prompt_query = prompt_query.filter(Prompt.category == filters["category"])
 
     if filters["query"]:
         search = f"%{filters['query']}%"
@@ -298,11 +284,6 @@ def normalise_history_filters(args):
     if visibility not in HISTORY_VISIBILITY_OPTIONS:
         visibility = "all"
 
-    category = args.get("category", "")
-    valid_categories = PROMPT_CATEGORIES + ("Optimisation",)
-    if category not in valid_categories:
-        category = ""
-
     sort = args.get("sort", "newest")
     if sort not in COMMUNITY_SORT_OPTIONS:
         sort = "newest"
@@ -311,7 +292,6 @@ def normalise_history_filters(args):
         "query": args.get("query", "").strip(),
         "type": prompt_type,
         "visibility": visibility,
-        "category": category,
         "sort": sort,
     }
 
@@ -328,9 +308,6 @@ def user_history_prompts(user, filters):
         prompt_query = prompt_query.filter(Prompt.is_public.is_(True))
     elif filters["visibility"] == "private":
         prompt_query = prompt_query.filter(Prompt.is_public.is_(False))
-
-    if filters["category"]:
-        prompt_query = prompt_query.filter(Prompt.category == filters["category"])
 
     if filters["query"]:
         search = f"%{filters['query']}%"

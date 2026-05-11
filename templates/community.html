@@ -8,7 +8,7 @@
     <div>
       <span class="eyebrow">Discover</span>
       <h1>Community prompts</h1>
-      <p class="muted">Find public reusable prompts from other users, or review the prompts you have chosen to keep public or private.</p>
+      <p class="muted">Find public reusable prompts from other users, or review private prompts you have saved for yourself.</p>
     </div>
     <a class="btn btn-primary" href="{{ url_for('main.new_prompt') }}">Share Prompt</a>
   </section>
@@ -22,21 +22,12 @@
           <button class="btn btn-primary" type="submit">Search</button>
         </div>
 
-        <div class="filter-grid">
+        <div class="filter-grid community-filter-grid">
           <div>
-            <label for="visibility">View</label>
+            <label for="visibility">Visibility</label>
             <select class="field" id="visibility" name="visibility">
               {% for value, label in visibility_options.items() %}
                 <option value="{{ value }}" {% if filters.visibility == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div>
-            <label for="category">Category</label>
-            <select class="field" id="category" name="category">
-              <option value="">All categories</option>
-              {% for category in categories %}
-                <option value="{{ category }}" {% if filters.category == category %}selected{% endif %}>{{ category }}</option>
               {% endfor %}
             </select>
           </div>
@@ -54,7 +45,7 @@
       <section class="result-list" aria-label="Prompt results">
         <div class="section-title">
           <h2>{{ prompts|length }} prompt{% if prompts|length != 1 %}s{% endif %} found</h2>
-          {% if filters.query or filters.category or filters.visibility != "all" %}
+          {% if filters.query or filters.visibility != "public" or filters.sort != "newest" %}
             <a class="mini" href="{{ url_for('main.community') }}">Clear filters</a>
           {% endif %}
         </div>
@@ -105,7 +96,7 @@
               <span class="chip">No results</span>
             </div>
             <h2>No prompts match these filters yet</h2>
-            <p class="muted">Try a broader search, choose another category, or share a prompt of your own.</p>
+            <p class="muted">Try a broader search, switch visibility, or share a prompt of your own.</p>
           </article>
         {% endfor %}
       </section>
@@ -114,7 +105,7 @@
     <aside class="card preview-panel">
       <span class="chip">Tips</span>
       <h2>Search smarter</h2>
-      <p class="muted">Use the view filter to switch between everything you can see, public community posts, and your own prompts.</p>
+      <p class="muted">Use Visibility to switch between public community posts and your own private prompts.</p>
 
       <div class="quality-list">
         <div class="quality-item">
