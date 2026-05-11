@@ -66,7 +66,7 @@ flask --app run run
 
 Then open `http://127.0.0.1:5000`.
 
-You can also run the app directly with `python run.py`.
+You can also run the app directly with `python app.py`.
 
 ## Configuration
 
