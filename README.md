@@ -49,7 +49,11 @@ project-root/
 
 | UWA ID | Name | GitHub username |
 | --- | --- | --- |
-| TODO | TODO | TODO |
+| 24547664 | Chenxu You | ChenxuYou |
+| 25057384 | Anto Melvin Mathew | ANTOMELV |
+| 24433446 | Sunjol Singh Paul | sunjol |
+| 24975803 | Shravan S Kumar Suresh Kumar | 
+ShravansKumar |
 
 Complete this table before submission with each team member's details.
 
