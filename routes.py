@@ -274,7 +274,7 @@ def optimise():
 @main_bp.route("/community")
 def community():
     filters = normalise_community_filters(request.args, g.user)
-    if g.user is None and request.args.get("visibility", "").startswith("my_"):
+    if g.user is None and request.args.get("visibility") == "my":
         flash("Please sign in to view your own prompts.", "warning")
 
     prompts = community_prompts(filters, g.user)
@@ -287,6 +287,25 @@ def community():
         visibility_options=COMMUNITY_VISIBILITY_OPTIONS,
         sort_options=COMMUNITY_SORT_OPTIONS,
     )
+
+
+@main_bp.post("/prompts/<int:prompt_id>/delete")
+@login_required
+def delete_prompt(prompt_id):
+    prompt = Prompt.query.filter_by(id=prompt_id, user_id=g.user.id).first()
+    if not prompt:
+        flash("That prompt could not be found in your account.", "warning")
+        return redirect(url_for("main.dashboard"))
+
+    title = prompt.title
+    db.session.delete(prompt)
+    db.session.commit()
+    flash(f"Deleted '{title}'.", "success")
+
+    next_url = request.form.get("next", "")
+    if next_url.startswith("/") and not next_url.startswith("//"):
+        return redirect(next_url)
+    return redirect(url_for("main.dashboard"))
 
 
 @main_bp.route("/history")
@@ -481,12 +500,7 @@ def new_prompt():
 
             visibility_label = "public" if prompt.is_public else "private"
             flash(f"Prompt saved as {visibility_label}.", "success")
-            return redirect(
-                url_for(
-                    "main.community",
-                    visibility="my_public" if prompt.is_public else "my_private",
-                )
-            )
+            return redirect(url_for("main.community", visibility="my"))
 
     return render_template(
         "prompt_form.html",

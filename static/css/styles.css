@@ -72,6 +72,14 @@ samp {
 .btn-primary { background: var(--blue); border-color: var(--blue); }
 .btn-primary:hover { filter: brightness(1.1); }
 .btn-soft { background: var(--panel-soft); }
+.btn-danger {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.48);
+  color: #fecaca;
+}
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.22);
+}
 
 .topbar {
   position: sticky;
@@ -426,6 +434,12 @@ samp {
 }
 .inline-form {
   margin: 0;
+}
+.button-row {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  align-items: center;
 }
 .preview-panel {
   display: grid;

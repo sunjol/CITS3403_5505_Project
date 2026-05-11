@@ -1,0 +1,9 @@
+Flask
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-WTF
+WTForms
+pytest
+pytest-flask
+selenium
+webdriver-manager

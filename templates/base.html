@@ -44,9 +44,9 @@
   {% block content %}{% endblock %}
 
   <script>
-    document.querySelectorAll("[data-logout-confirm]").forEach((form) => {
+    document.querySelectorAll("[data-logout-confirm], [data-confirm-submit]").forEach((form) => {
       form.addEventListener("submit", (event) => {
-        const message = form.dataset.confirmMessage || "Are you sure you want to log out?";
+        const message = form.dataset.confirmMessage || "Are you sure?";
         if (!window.confirm(message)) {
           event.preventDefault();
         }
