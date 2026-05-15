@@ -12,6 +12,23 @@ PromptShare is a Flask web application for polishing AI prompts, saving prompt h
 - View personal history with search, type filtering, visibility controls, sorting, and "Optimise Again".
 - Track daily optimisation quota on the dashboard. The default limit is 20 per user per day and resets at 12:00 am in the configured timezone, defaulting to Australia/Perth.
 
+## Screenshots
+
+### Homepage
+![PromptShare homepage with hero section](docs/screenshots/homepage.png)
+
+### Sign Up
+![Sign up form with password strength meter](docs/screenshots/signup.png)
+
+### Dashboard
+![Prompt dashboard with quota tracking and recent prompts](docs/screenshots/dashboard.png)
+
+### Optimise a Prompt
+![Optimise prompt form with tone, format, audience, and focus controls](docs/screenshots/optimise.png)
+
+### Community Page
+![Community page for browsing public prompts shared by other users](docs/screenshots/community.png)
+
 ## Project Structure
 
 ```text
