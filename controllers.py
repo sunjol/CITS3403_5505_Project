@@ -4,8 +4,10 @@ import urllib.request
 from datetime import datetime, time, timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from sqlalchemy import func
+
 from extensions import db
-from models import DailyQuotaUsage, Prompt
+from models import DailyQuotaUsage, Prompt, PromptLike
 
 
 class ExternalModelError(RuntimeError):
@@ -273,6 +275,61 @@ def community_prompts(filters, user=None):
         prompt_query = prompt_query.order_by(Prompt.created_at.desc())
 
     return prompt_query.all()
+
+
+def prompt_like_counts(prompt_ids):
+    if not prompt_ids:
+        return {}
+
+    rows = (
+        db.session.query(PromptLike.prompt_id, func.count(PromptLike.id))
+        .filter(PromptLike.prompt_id.in_(prompt_ids))
+        .group_by(PromptLike.prompt_id)
+        .all()
+    )
+    return {prompt_id: count for prompt_id, count in rows}
+
+
+def liked_prompt_ids_for_user(user, prompt_ids):
+    if user is None or not prompt_ids:
+        return set()
+
+    rows = (
+        PromptLike.query.filter(
+            PromptLike.user_id == user.id,
+            PromptLike.prompt_id.in_(prompt_ids),
+        )
+        .with_entities(PromptLike.prompt_id)
+        .all()
+    )
+    return {prompt_id for (prompt_id,) in rows}
+
+
+def like_context_for_prompts(prompts, user=None):
+    public_ids = [prompt.id for prompt in prompts if prompt.is_public]
+    return {
+        "like_counts": prompt_like_counts(public_ids),
+        "liked_prompt_ids": liked_prompt_ids_for_user(user, public_ids),
+    }
+
+
+def toggle_prompt_like(user, prompt):
+    if not prompt.is_public:
+        raise ValueError("Only public prompts can be liked.")
+
+    existing = PromptLike.query.filter_by(
+        user_id=user.id,
+        prompt_id=prompt.id,
+    ).first()
+    if existing:
+        db.session.delete(existing)
+        liked = False
+    else:
+        db.session.add(PromptLike(user_id=user.id, prompt_id=prompt.id))
+        liked = True
+
+    db.session.flush()
+    return liked, prompt_like_counts([prompt.id]).get(prompt.id, 0)
 
 
 def normalise_history_filters(args):

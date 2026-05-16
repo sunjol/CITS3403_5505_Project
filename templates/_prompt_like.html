@@ -1,0 +1,22 @@
+{% if prompt.is_public %}
+  {% set like_count = like_counts.get(prompt.id, 0) %}
+  {% if current_user %}
+    <form class="inline-form like-form" action="{{ url_for('main.toggle_prompt_like', prompt_id=prompt.id) }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="next" value="{{ request.full_path }}">
+      <button
+        class="btn btn-soft mini like-btn{% if prompt.id in liked_prompt_ids %} is-liked{% endif %}"
+        type="button"
+        aria-pressed="{{ 'true' if prompt.id in liked_prompt_ids else 'false' }}"
+      >
+        <span class="like-btn-label">{% if prompt.id in liked_prompt_ids %}Liked{% else %}Like{% endif %}</span>
+        <span class="like-btn-count">{{ like_count }}</span>
+      </button>
+    </form>
+  {% else %}
+    <span class="like-count-display mini muted" aria-label="{{ like_count }} likes">
+      {{ like_count }} like{% if like_count != 1 %}s{% endif %}
+    </span>
+    <a class="btn btn-soft mini" href="{{ url_for('main.login', next=request.full_path) }}">Sign in to like</a>
+  {% endif %}
+{% endif %}

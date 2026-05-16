@@ -6,7 +6,7 @@ from pathlib import Path
 import controllers
 from config import Config
 from extensions import db
-from models import DailyQuotaUsage, Prompt, User
+from models import DailyQuotaUsage, Prompt, PromptLike, User
 
 APP_MODULE_PATH = Path(__file__).resolve().parents[2] / "app.py"
 APP_SPEC = importlib.util.spec_from_file_location("promptshare_root_app", APP_MODULE_PATH)
@@ -752,3 +752,103 @@ def test_profile_rejects_wrong_current_password(client):
     )
 
     assert b"Current password is incorrect." in response.data
+
+
+def like_post(client, prompt_id):
+    return client.post(
+        f"/prompts/{prompt_id}/like",
+        headers={
+            "X-Requested-With": "XMLHttpRequest",
+            "Accept": "application/json",
+        },
+    )
+
+
+def test_user_can_like_public_prompt(client, app):
+    signup(client, username="liker", email="liker@example.com")
+    save_prompt(client, title="Public study helper", visibility="public")
+
+    with app.app_context():
+        prompt = Prompt.query.filter_by(title="Public study helper").one()
+
+    response = like_post(client, prompt.id)
+    data = response.get_json()
+
+    assert response.status_code == 200
+    assert data["success"] is True
+    assert data["liked"] is True
+    assert data["like_count"] == 1
+    assert "liked" in data["message"]
+
+    with app.app_context():
+        assert PromptLike.query.filter_by(prompt_id=prompt.id).count() == 1
+
+
+def test_like_toggle_unlikes_public_prompt(client, app):
+    signup(client, username="liker2", email="liker2@example.com")
+    save_prompt(client, title="Toggle like prompt", visibility="public")
+
+    with app.app_context():
+        prompt = Prompt.query.filter_by(title="Toggle like prompt").one()
+        prompt_id = prompt.id
+
+    like_post(client, prompt_id)
+    response = like_post(client, prompt_id)
+    data = response.get_json()
+
+    assert response.status_code == 200
+    assert data["success"] is True
+    assert data["liked"] is False
+    assert data["like_count"] == 0
+    assert "unliked" in data["message"]
+
+    with app.app_context():
+        assert PromptLike.query.filter_by(prompt_id=prompt_id).count() == 0
+
+
+def test_cannot_like_private_prompt(client, app):
+    signup(client, username="liker3", email="liker3@example.com")
+    save_prompt(client, title="Private only", visibility="private")
+
+    with app.app_context():
+        prompt = Prompt.query.filter_by(title="Private only").one()
+
+    response = like_post(client, prompt.id)
+    data = response.get_json()
+
+    assert response.status_code == 404
+    assert data["success"] is False
+    assert "Only public prompts can be liked." in data["message"]
+
+    with app.app_context():
+        assert PromptLike.query.count() == 0
+
+
+def test_community_shows_like_count_for_guest(client, app):
+    signup(client, username="author", email="author@example.com")
+    save_prompt(client, title="Guest visible likes", visibility="public")
+    client.post("/logout", follow_redirects=True)
+
+    with app.app_context():
+        prompt = Prompt.query.filter_by(title="Guest visible likes").one()
+        db.session.add(PromptLike(user_id=prompt.user_id, prompt_id=prompt.id))
+        db.session.commit()
+
+    response = client.get("/community")
+    assert b"1 like" in response.data
+    assert b"Sign in to like" in response.data
+
+
+def test_two_users_can_like_same_public_prompt(client, app):
+    signup(client, username="author4", email="author4@example.com")
+    save_prompt(client, title="Shared likes", visibility="public")
+
+    with app.app_context():
+        prompt = Prompt.query.filter_by(title="Shared likes").one()
+        prompt_id = prompt.id
+
+    signup(client, username="fan", email="fan@example.com")
+    like_post(client, prompt_id)
+
+    with app.app_context():
+        assert PromptLike.query.filter_by(prompt_id=prompt_id).count() == 1

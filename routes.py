@@ -6,6 +6,7 @@ from flask import (
     current_app,
     flash,
     g,
+    jsonify,
     redirect,
     render_template,
     request,
@@ -27,8 +28,10 @@ from controllers import (
     community_prompts,
     consume_quota,
     ensure_quota_available,
+    like_context_for_prompts,
     normalise_history_filters,
     normalise_community_filters,
+    toggle_prompt_like as apply_prompt_like,
     optimise_prompt,
     optimise_prompt_with_groq,
     quota_usage_for_user,
@@ -37,6 +40,10 @@ from controllers import (
 
 
 main_bp = Blueprint("main", __name__)
+
+
+def wants_json_response():
+    return request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
 
 def login_required(view_func):
@@ -278,6 +285,7 @@ def community():
         flash("Please sign in to view your private prompts.", "warning")
 
     prompts = community_prompts(filters, g.user)
+    like_context = like_context_for_prompts(prompts, g.user)
     return render_template(
         "community.html",
         current_page="community",
@@ -285,7 +293,47 @@ def community():
         filters=filters,
         visibility_options=COMMUNITY_VISIBILITY_OPTIONS,
         sort_options=COMMUNITY_SORT_OPTIONS,
+        **like_context,
     )
+
+
+@main_bp.post("/prompts/<int:prompt_id>/like")
+@login_required
+def toggle_prompt_like(prompt_id):
+    prompt = Prompt.query.filter_by(id=prompt_id, is_public=True).first()
+    if not prompt:
+        message = "Only public prompts can be liked."
+        if wants_json_response():
+            return jsonify({"success": False, "message": message}), 404
+        flash(message, "warning")
+        return redirect(url_for("main.community"))
+
+    try:
+        liked, like_count = apply_prompt_like(g.user, prompt)
+        db.session.commit()
+        label = "liked" if liked else "unliked"
+        message = f"You {label} '{prompt.title}'. It now has {like_count} like(s)."
+        if wants_json_response():
+            return jsonify(
+                {
+                    "success": True,
+                    "liked": liked,
+                    "like_count": like_count,
+                    "prompt_id": prompt.id,
+                    "message": message,
+                }
+            )
+        flash(message, "success")
+    except ValueError as error:
+        db.session.rollback()
+        if wants_json_response():
+            return jsonify({"success": False, "message": str(error)}), 400
+        flash(str(error), "warning")
+
+    next_url = request.form.get("next", "")
+    if next_url.startswith("/") and not next_url.startswith("//"):
+        return redirect(next_url)
+    return redirect(url_for("main.community"))
 
 
 @main_bp.post("/prompts/<int:prompt_id>/delete")
@@ -312,6 +360,7 @@ def delete_prompt(prompt_id):
 def history():
     filters = normalise_history_filters(request.args)
     prompts = user_history_prompts(g.user, filters)
+    like_context = like_context_for_prompts(prompts, g.user)
     return render_template(
         "history.html",
         current_page="history",
@@ -320,6 +369,7 @@ def history():
         type_options=HISTORY_TYPE_OPTIONS,
         visibility_options=HISTORY_VISIBILITY_OPTIONS,
         sort_options=COMMUNITY_SORT_OPTIONS,
+        **like_context,
     )
 
 
