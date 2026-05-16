@@ -18,6 +18,7 @@ class User(db.Model):
 
     prompts = db.relationship("Prompt", back_populates="user", lazy=True)
     quota_usages = db.relationship("DailyQuotaUsage", back_populates="user", lazy=True)
+    prompt_likes = db.relationship("PromptLike", back_populates="user", lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -44,6 +45,26 @@ class Prompt(db.Model):
     )
 
     user = db.relationship("User", back_populates="prompts")
+    likes = db.relationship(
+        "PromptLike",
+        back_populates="prompt",
+        lazy=True,
+        cascade="all, delete-orphan",
+    )
+
+
+class PromptLike(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    prompt_id = db.Column(db.Integer, db.ForeignKey("prompt.id"), nullable=False)
+    created_at = db.Column(db.DateTime, default=utc_now, nullable=False)
+
+    user = db.relationship("User", back_populates="prompt_likes")
+    prompt = db.relationship("Prompt", back_populates="likes")
+
+    __table_args__ = (
+        db.UniqueConstraint("user_id", "prompt_id", name="uq_prompt_like_user_prompt"),
+    )
 
 
 class DailyQuotaUsage(db.Model):

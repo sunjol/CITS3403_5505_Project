@@ -79,6 +79,7 @@
                 Posted by {% if current_user and prompt.user_id == current_user.id %}you{% else %}{{ prompt.user.username }}{% endif %}
               </span>
               <div class="button-row">
+                {% include "_prompt_like.html" %}
                 <a class="btn btn-soft mini" href="{{ url_for('main.optimise', similar_prompt_id=prompt.id) }}">Optimise Similar</a>
                 {% if current_user and prompt.user_id == current_user.id %}
                   <form class="inline-form" action="{{ url_for('main.delete_prompt', prompt_id=prompt.id) }}" method="post" data-confirm-submit data-confirm-message="Delete this prompt? This cannot be undone.">
