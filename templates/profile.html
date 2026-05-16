@@ -67,8 +67,21 @@
       </form>
     </div>
 
-    <aside class="card preview-panel">
+    <aside class="card preview-panel theme-settings">
       <span class="chip">Settings</span>
+      <h2>Appearance</h2>
+      <p class="muted">Choose how PromptShare looks on this device. Your preference is saved in your browser.</p>
+      <div class="theme-toggle-row" role="group" aria-label="Colour theme">
+        <div class="theme-toggle-copy">
+          <h3>Theme</h3>
+          <p class="muted mini">Switch between dark and light mode.</p>
+        </div>
+        <div class="theme-toggle-control">
+          <button class="theme-toggle-btn is-active" type="button" data-theme-option="dark" aria-pressed="true">Dark</button>
+          <button class="theme-toggle-btn" type="button" data-theme-option="light" aria-pressed="false">Light</button>
+        </div>
+      </div>
+
       <h2>Account safety</h2>
       <p class="muted">Passwords should be stored only as salted hashes. Raw passwords should never be saved.</p>
       <div class="quality-list">

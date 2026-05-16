@@ -30,7 +30,7 @@
 
 /* --- Error message text below fields --- */
 .field-error-text {
-  color: #fca5a5;
+  color: var(--error-text);
   margin: 0.35rem 0 0;
   line-height: 1.4;
   display: flex;

@@ -1,9 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}PromptShare{% endblock %}</title>
+  <script>
+    (function () {
+      var theme = localStorage.getItem("promptshare-theme");
+      document.documentElement.setAttribute(
+        "data-theme",
+        theme === "light" || theme === "dark" ? theme : "dark"
+      );
+    })();
+  </script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   {% block extra_css %}{% endblock %}
 </head>
@@ -53,6 +62,7 @@
       });
     });
   </script>
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>
