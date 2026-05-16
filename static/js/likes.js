@@ -84,20 +84,31 @@
       });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll("form.like-form").forEach(function (form) {
-      var button = form.querySelector(".like-btn");
-      if (button) {
-        button.type = "button";
-      }
+  function prepareLikeForm(form) {
+    var button = form.querySelector(".like-btn");
+    if (button && button.type !== "button") {
+      button.type = "button";
+    }
+    return button;
+  }
 
-      form.addEventListener("click", function (event) {
-        if (!event.target.closest(".like-btn")) {
-          return;
-        }
-        event.preventDefault();
-        sendLikeRequest(form, button);
-      });
-    });
+  document.addEventListener("click", function (event) {
+    var button = event.target.closest(".like-btn");
+    if (!button) {
+      return;
+    }
+
+    var form = button.closest("form.like-form");
+    if (!form) {
+      return;
+    }
+
+    event.preventDefault();
+    prepareLikeForm(form);
+    sendLikeRequest(form, button);
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("form.like-form").forEach(prepareLikeForm);
   });
 })();

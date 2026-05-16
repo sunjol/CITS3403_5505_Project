@@ -3,7 +3,7 @@
   {% if current_user %}
     <form class="inline-form like-form" action="{{ url_for('main.toggle_prompt_like', prompt_id=prompt.id) }}" method="post">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input type="hidden" name="next" value="{{ request.full_path }}">
+      <input type="hidden" name="next" value="{{ results_next or request.full_path }}">
       <button
         class="btn btn-soft mini like-btn{% if prompt.id in liked_prompt_ids %} is-liked{% endif %}"
         type="button"

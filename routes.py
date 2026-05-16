@@ -297,6 +297,35 @@ def community():
     )
 
 
+@main_bp.route("/api/community/search")
+def community_search_api():
+    filters = normalise_community_filters(request.args, g.user)
+    prompts = community_prompts(filters, g.user)
+    like_context = like_context_for_prompts(prompts, g.user)
+    html = render_template(
+        "_community_results.html",
+        prompts=prompts,
+        filters=filters,
+        **like_context,
+    )
+    return jsonify({"count": len(prompts), "html": html})
+
+
+@main_bp.route("/api/history/search")
+@login_required
+def history_search_api():
+    filters = normalise_history_filters(request.args)
+    prompts = user_history_prompts(g.user, filters)
+    like_context = like_context_for_prompts(prompts, g.user)
+    html = render_template(
+        "_history_results.html",
+        prompts=prompts,
+        filters=filters,
+        **like_context,
+    )
+    return jsonify({"count": len(prompts), "html": html})
+
+
 @main_bp.post("/prompts/<int:prompt_id>/like")
 @login_required
 def toggle_prompt_like(prompt_id):
