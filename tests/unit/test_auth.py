@@ -339,6 +339,74 @@ def test_community_view_options_are_simplified(client):
     assert b"<label for=\"category\">Category</label>" not in response.data
 
 
+def test_community_search_api_returns_json_html(client):
+    signup(client, username="alice_user", email="alice@example.com")
+    save_prompt(
+        client,
+        title="Python unit test helper",
+        category="Coding",
+        prompt="Write Python unit tests for this function.",
+        visibility="public",
+    )
+    save_prompt(
+        client,
+        title="Marketing headline writer",
+        category="Marketing",
+        prompt="Write campaign headlines.",
+        visibility="public",
+    )
+
+    response = client.get(
+        "/api/community/search?query=python&visibility=public",
+        headers={"X-Requested-With": "XMLHttpRequest"},
+    )
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["count"] == 1
+    assert "Python unit test helper" in payload["html"]
+    assert "Marketing headline writer" not in payload["html"]
+
+
+def test_history_search_api_requires_login(client):
+    response = client.get(
+        "/api/history/search?query=draft",
+        headers={"X-Requested-With": "XMLHttpRequest"},
+    )
+
+    assert response.status_code == 302
+    assert "/login" in response.headers["Location"]
+
+
+def test_history_search_api_returns_filtered_results(client):
+    signup(client)
+    save_prompt(
+        client,
+        title="Product launch draft",
+        category="Marketing",
+        prompt="Draft a launch announcement.",
+        visibility="private",
+    )
+    save_prompt(
+        client,
+        title="Weekly study plan",
+        category="Study",
+        prompt="Plan revision sessions.",
+        visibility="private",
+    )
+
+    response = client.get(
+        "/api/history/search?query=product",
+        headers={"X-Requested-With": "XMLHttpRequest"},
+    )
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["count"] == 1
+    assert "Product launch draft" in payload["html"]
+    assert "Weekly study plan" not in payload["html"]
+
+
 def test_community_search_filters_public_prompts(client):
     signup(client, username="alice_user", email="alice@example.com")
     save_prompt(

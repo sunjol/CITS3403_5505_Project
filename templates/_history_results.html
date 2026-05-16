@@ -1,0 +1,55 @@
+{% set results_next = url_for('main.history', query=filters.query, type=filters.type, visibility=filters.visibility, sort=filters.sort) %}
+<div class="section-title">
+  <h2 data-search-count>{{ prompts|length }} record{% if prompts|length != 1 %}s{% endif %} found</h2>
+  {% if filters.query or filters.type != "all" or filters.visibility != "all" or filters.sort != "newest" %}
+    <a class="mini" href="{{ url_for('main.history') }}">Clear filters</a>
+  {% endif %}
+</div>
+
+{% for prompt in prompts %}
+  <article class="prompt-result">
+    <div class="prompt-meta">
+      <span class="chip {{ 'success' if prompt.optimised_prompt else '' }}">{{ "Optimised" if prompt.optimised_prompt else "Saved draft" }}</span>
+      <span class="chip {{ 'success' if not prompt.is_public else '' }}">{{ "Public" if prompt.is_public else "Private" }}</span>
+      <span class="muted mini">{{ prompt.created_at.strftime("%d %b %Y") }}</span>
+    </div>
+    <h2>{{ prompt.title }}</h2>
+    <p class="muted">{{ prompt.notes or prompt.original_prompt|truncate(180) }}</p>
+
+    <details class="review-box">
+      <summary>Review prompt details</summary>
+      <div class="compare-grid">
+        <div class="compare-box">
+          <h3>Original</h3>
+          <pre>{{ prompt.original_prompt }}</pre>
+        </div>
+        {% if prompt.optimised_prompt %}
+          <div class="compare-box">
+            <h3>Optimised</h3>
+            <pre>{{ prompt.optimised_prompt }}</pre>
+          </div>
+        {% endif %}
+      </div>
+    </details>
+
+    <div class="result-footer">
+      {% include "_prompt_like.html" %}
+      <form action="{{ url_for('main.update_prompt_visibility', prompt_id=prompt.id) }}" method="post" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="visibility" value="{{ 'private' if prompt.is_public else 'public' }}">
+        <button class="btn btn-soft mini" type="submit">
+          Make {{ "Private" if prompt.is_public else "Public" }}
+        </button>
+      </form>
+      <a class="btn btn-soft mini" href="{{ url_for('main.optimise', similar_prompt_id=prompt.id) }}">Optimise Again</a>
+    </div>
+  </article>
+{% else %}
+  <article class="prompt-result">
+    <div class="prompt-meta">
+      <span class="chip">No history</span>
+    </div>
+    <h2>No matching history yet</h2>
+    <p class="muted">Save or optimise a prompt, then return here to review and manage it.</p>
+  </article>
+{% endfor %}

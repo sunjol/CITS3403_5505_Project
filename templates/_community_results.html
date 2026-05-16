@@ -1,0 +1,58 @@
+{% set results_next = url_for('main.community', query=filters.query, visibility=filters.visibility, sort=filters.sort) %}
+<div class="section-title">
+  <h2 data-search-count>{{ prompts|length }} prompt{% if prompts|length != 1 %}s{% endif %} found</h2>
+  {% if filters.query or filters.visibility != "public" or filters.sort != "newest" %}
+    <a class="mini" href="{{ url_for('main.community') }}">Clear filters</a>
+  {% endif %}
+</div>
+
+{% for prompt in prompts %}
+  <article class="prompt-result">
+    <div class="prompt-meta">
+      <span class="chip">{{ prompt.category }}</span>
+      <span class="chip {{ 'success' if not prompt.is_public else '' }}">{{ "Public" if prompt.is_public else "Private" }}</span>
+      <span class="muted mini">{{ prompt.created_at.strftime("%d %b %Y") }}</span>
+    </div>
+    <h2>{{ prompt.title }}</h2>
+    <p class="muted">{{ prompt.notes or prompt.original_prompt|truncate(180) }}</p>
+    <details class="review-box">
+      <summary>Review prompt</summary>
+      <div class="compare-grid">
+        <div class="compare-box">
+          <h3>Original</h3>
+          <pre>{{ prompt.original_prompt }}</pre>
+        </div>
+        {% if prompt.optimised_prompt %}
+          <div class="compare-box">
+            <h3>Optimised</h3>
+            <pre>{{ prompt.optimised_prompt }}</pre>
+          </div>
+        {% endif %}
+      </div>
+    </details>
+    <div class="result-footer">
+      <span class="muted mini">
+        Posted by {% if current_user and prompt.user_id == current_user.id %}you{% else %}{{ prompt.user.username }}{% endif %}
+      </span>
+      <div class="button-row">
+        {% include "_prompt_like.html" %}
+        <a class="btn btn-soft mini" href="{{ url_for('main.optimise', similar_prompt_id=prompt.id) }}">Optimise Similar</a>
+        {% if current_user and prompt.user_id == current_user.id %}
+          <form class="inline-form" action="{{ url_for('main.delete_prompt', prompt_id=prompt.id) }}" method="post" data-confirm-submit data-confirm-message="Delete this prompt? This cannot be undone.">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" value="{{ results_next }}">
+            <button class="btn btn-danger mini" type="submit">Delete</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </article>
+{% else %}
+  <article class="prompt-result">
+    <div class="prompt-meta">
+      <span class="chip">No results</span>
+    </div>
+    <h2>No prompts match these filters yet</h2>
+    <p class="muted">Try a broader search, switch visibility, or share a prompt of your own.</p>
+  </article>
+{% endfor %}

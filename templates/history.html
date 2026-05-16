@@ -13,14 +13,22 @@
     <a class="btn btn-primary" href="{{ url_for('main.optimise') }}">Optimise Prompt</a>
   </section>
 
-  <form class="card prompt-form history-filters" action="{{ url_for('main.history') }}" method="get">
+  <form
+    class="card prompt-form history-filters"
+    action="{{ url_for('main.history') }}"
+    method="get"
+    data-live-search
+    data-search-url="{{ url_for('main.history_search_api') }}"
+    data-results-target="#history-results"
+  >
     <div class="history-search-row">
       <div>
         <label for="history-query">Search history</label>
-        <input class="field" id="history-query" name="query" type="search" placeholder="Search title, prompt text, or notes" value="{{ filters.query }}">
+        <input class="field live-search-input" id="history-query" name="query" type="search" placeholder="Search title, prompt text, or notes" value="{{ filters.query }}" autocomplete="off" aria-controls="history-results" aria-describedby="history-search-status">
       </div>
       <button class="btn btn-primary" type="submit">Search</button>
     </div>
+    <p class="search-status muted mini" id="history-search-status" role="status" aria-live="polite"></p>
 
     <div class="filter-grid history-filter-grid">
       <div>
@@ -50,61 +58,12 @@
     </div>
   </form>
 
-  <section class="result-list history-list">
-    <div class="section-title">
-      <h2>{{ prompts|length }} record{% if prompts|length != 1 %}s{% endif %} found</h2>
-      {% if filters.query or filters.type != "all" or filters.visibility != "all" or filters.sort != "newest" %}
-        <a class="mini" href="{{ url_for('main.history') }}">Clear filters</a>
-      {% endif %}
-    </div>
-
-    {% for prompt in prompts %}
-      <article class="prompt-result">
-        <div class="prompt-meta">
-          <span class="chip {{ 'success' if prompt.optimised_prompt else '' }}">{{ "Optimised" if prompt.optimised_prompt else "Saved draft" }}</span>
-          <span class="chip {{ 'success' if not prompt.is_public else '' }}">{{ "Public" if prompt.is_public else "Private" }}</span>
-          <span class="muted mini">{{ prompt.created_at.strftime("%d %b %Y") }}</span>
-        </div>
-        <h2>{{ prompt.title }}</h2>
-        <p class="muted">{{ prompt.notes or prompt.original_prompt|truncate(180) }}</p>
-
-        <details class="review-box">
-          <summary>Review prompt details</summary>
-          <div class="compare-grid">
-            <div class="compare-box">
-              <h3>Original</h3>
-              <pre>{{ prompt.original_prompt }}</pre>
-            </div>
-            {% if prompt.optimised_prompt %}
-              <div class="compare-box">
-                <h3>Optimised</h3>
-                <pre>{{ prompt.optimised_prompt }}</pre>
-              </div>
-            {% endif %}
-          </div>
-        </details>
-
-        <div class="result-footer">
-          {% include "_prompt_like.html" %}
-          <form action="{{ url_for('main.update_prompt_visibility', prompt_id=prompt.id) }}" method="post" class="inline-form">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="visibility" value="{{ 'private' if prompt.is_public else 'public' }}">
-            <button class="btn btn-soft mini" type="submit">
-              Make {{ "Private" if prompt.is_public else "Public" }}
-            </button>
-          </form>
-          <a class="btn btn-soft mini" href="{{ url_for('main.optimise', similar_prompt_id=prompt.id) }}">Optimise Again</a>
-        </div>
-      </article>
-    {% else %}
-      <article class="prompt-result">
-        <div class="prompt-meta">
-          <span class="chip">No history</span>
-        </div>
-        <h2>No matching history yet</h2>
-        <p class="muted">Save or optimise a prompt, then return here to review and manage it.</p>
-      </article>
-    {% endfor %}
+  <section class="result-list history-list" id="history-results" aria-label="History results" aria-live="polite">
+    {% include "_history_results.html" %}
   </section>
 </main>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 {% endblock %}

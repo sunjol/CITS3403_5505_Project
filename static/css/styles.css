@@ -621,6 +621,15 @@ samp {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.8rem;
 }
+.search-status {
+  min-height: 1.2rem;
+  margin: 0.35rem 0 0;
+}
+.result-list.is-search-loading {
+  opacity: 0.62;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
 .filter-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
